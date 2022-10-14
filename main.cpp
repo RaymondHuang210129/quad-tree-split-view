@@ -1,6 +1,8 @@
 #include <iostream>
 
+import sample;
+
 int main() {
-    std::cout << "Hello, World!" << std::endl;
+    std::cout << helloWorld() << std::endl;
     return 0;
 }
