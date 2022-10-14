@@ -1,0 +1,6 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
+  "name": "mini-portal",
+  "version": "0.0.1",
+  "dependencies": ["glad", "glfw3", "glm"]
+}

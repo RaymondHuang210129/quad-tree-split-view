@@ -1,5 +1,5 @@
-# Created by https://www.toptal.com/developers/gitignore/api/windows,visualstudio,visualstudiocode,c++,python
-# Edit at https://www.toptal.com/developers/gitignore?templates=windows,visualstudio,visualstudiocode,c++,python
+# Created by https://www.toptal.com/developers/gitignore/api/c++,python,visualstudiocode,visualstudio,vcpkg,windows
+# Edit at https://www.toptal.com/developers/gitignore?templates=c++,python,visualstudiocode,visualstudio,vcpkg,windows
 
 ### C++ ###
 # Prerequisites
@@ -195,6 +195,13 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
+
+### vcpkg ###
+# Vcpkg
+vcpkg/
+
+## Manifest Mode
+vcpkg_installed/
 
 ### VisualStudioCode ###
 .vscode/*
@@ -632,4 +639,4 @@ FodyWeavers.xsd
 ### VisualStudio Patch ###
 # Additional files built by Visual Studio
 
-# End of https://www.toptal.com/developers/gitignore/api/windows,visualstudio,visualstudiocode,c++,python
+# End of https://www.toptal.com/developers/gitignore/api/c++,python,visualstudiocode,visualstudio,vcpkg,windows
