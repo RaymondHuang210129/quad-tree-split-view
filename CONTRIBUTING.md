@@ -3,6 +3,7 @@
 ## Getting Started
 
 - Ensure you have Visual Studio 2022 installed.
+- Ensure the path of the project only contains ASCII characters.
 
 After cloning the repository, execute the install script to install the required
 dependencies with vcpkg.
