@@ -1,0 +1,5 @@
+BasedOnStyle: LLVM
+AllowShortIfStatementsOnASingleLine : AllIfsAndElse
+SortIncludes: CaseInsensitive
+PointerAlignment: Left
+ReferenceAlignment: Left
