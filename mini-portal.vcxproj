@@ -19,8 +19,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="sample.ixx" />
+    <ClCompile Include="src\axes.ixx" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\raii_glfw.ixx" />
+    <ClCompile Include="src\scene.ixx" />
+    <ClCompile Include="src\shader.ixx" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\shaders\default.frag" />
+    <None Include="src\shaders\default.vert" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
