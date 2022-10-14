@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "mini-portal-opengl"
+version = "0.1.0"
+description = ""
+authors = ["Shuang Wu <seanwu1105@gmail.com>", "Tse-Jui Huang <huan1763@purdue.edu>", "Li-Yen Yen <yenl@purdue.edu>", "Ying-Chu Wang <wang5306@purdue.edu>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^2.20.0"
+commitizen = "^2.35.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
