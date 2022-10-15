@@ -4,6 +4,7 @@
 
 - Ensure you have Visual Studio 2022 installed.
 - Ensure the path of the project only contains ASCII characters.
+- Ensure you have Python 3.10 or later installed.
 - Ensure you have Poetry 1.2 or later installed. See
   [Poetry Installation](https://python-poetry.org/docs/#installation) for
   details.
