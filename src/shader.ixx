@@ -88,16 +88,21 @@ void checkShaderLink(const auto shaderProgram) {
   }
 }
 
-export void setUniformToProgram(const GLuint& shaderProgram,
-                                const std::string& name, const glm::mat4& mat) {
-  glUseProgram(shaderProgram);
-  glUniformMatrix4fv(glGetUniformLocation(shaderProgram, name.c_str()), 1,
-                     GL_FALSE, glm::value_ptr(mat));
-}
+template <typename T>
+concept UniformAcceptable =
+    std::is_same_v<T, glm::mat4> || std::is_same_v<T, glm::vec4>;
 
-export void setUniformToProgram(const GLuint& shaderProgram,
-                                const std::string& name, const glm::vec4& vec) {
+export template <UniformAcceptable T>
+void setUniformToProgram(const GLuint& shaderProgram, const std::string& name,
+                         const T& data) {
   glUseProgram(shaderProgram);
-  glUniform4fv(glGetUniformLocation(shaderProgram, name.c_str()), 1,
-               glm::value_ptr(vec));
+  if constexpr (std::is_same_v<T, glm::mat4>) {
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, name.c_str()), 1,
+                       GL_FALSE, glm::value_ptr(data));
+  } else if constexpr (std::is_same_v<T, glm::vec4>) {
+    glUniform4fv(glGetUniformLocation(shaderProgram, name.c_str()), 1,
+                 glm::value_ptr(data));
+  } else {
+    throw std::runtime_error("incompatible type");
+  }
 }
