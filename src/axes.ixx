@@ -3,7 +3,7 @@ module;
 #include <array>
 
 #include <glad/glad.h>
-#include <glm/gtc/type_ptr.hpp>
+#include <glm/matrix.hpp>
 
 export module axes;
 

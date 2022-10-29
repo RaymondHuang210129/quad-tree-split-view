@@ -45,7 +45,7 @@ int main() {
   glfwSetWindowUserPointer(window, &userData);
 
   const glm::mat4 view{
-      glm::lookAt(glm::vec3{2, 2, 1}, glm::vec3{0, 0, 0}, glm::vec3{0, 1, 0})};
+      glm::lookAt(glm::vec3{3, 2, 1}, glm::vec3{0, 0, 0}, glm::vec3{0, 1, 0})};
 
   while (!glfwWindowShouldClose(window)) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

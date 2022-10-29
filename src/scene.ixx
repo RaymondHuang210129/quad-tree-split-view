@@ -1,10 +1,16 @@
 module;
 
-#include <glm/gtc/type_ptr.hpp>
+#include <array>
+#include <variant>
+
+#include <glm/gtc/matrix_transform.hpp>
 
 export module scene;
 
 import axes;
+import grid;
+
+using StaticComponent = std::variant<AxesComponent, GridComponent>;
 
 export struct SceneData {};
 
@@ -15,7 +21,9 @@ public:
   }
 
   void render(const glm::mat4& view, const SceneData& data) const {
-    axesComponent.render(view, proj);
+    for (const auto& component : staticComponents) {
+      std::visit([&](const auto& c) { c.render(view, proj); }, component);
+    }
   }
 
   void updateViewAspectRatio(const float& viewAspectRatio) {
@@ -25,6 +33,6 @@ public:
 
 private:
   glm::mat4 proj{};
-
-  const AxesComponent axesComponent{};
+  const std::array<StaticComponent, 2> staticComponents{AxesComponent{},
+                                                        GridComponent{}};
 };

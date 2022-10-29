@@ -13,7 +13,7 @@
       <UniqueIdentifier>{3a53070c-9569-4daf-860e-b27fd2ca0fb4}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Components">
-      <UniqueIdentifier>{cbe7cabb-8be5-43a0-80ff-a7001cd46768}</UniqueIdentifier>
+      <UniqueIdentifier>{752d51ab-f7f9-4593-8591-0f7752a4d1d4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -30,6 +30,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\axes.ixx">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\grid.ixx">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
   </ItemGroup>
