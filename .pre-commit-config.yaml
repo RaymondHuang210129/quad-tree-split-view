@@ -1,4 +1,5 @@
 default_install_hook_types: [pre-commit, commit-msg, pre-push]
+exclude: (.*\.sln|.*\.vcxproj|.*\.vcxproj.filters)
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.3.0
