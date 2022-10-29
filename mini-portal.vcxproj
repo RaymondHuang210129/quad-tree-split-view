@@ -26,8 +26,8 @@
     <ClCompile Include="src\shader.ixx" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="src\shaders\default.frag" />
-    <None Include="src\shaders\default.vert" />
+    <None Include="src\shaders\basic.frag" />
+    <None Include="src\shaders\basic.vert" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

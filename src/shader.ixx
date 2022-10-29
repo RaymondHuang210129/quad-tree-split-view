@@ -37,13 +37,13 @@ buildShaderProgram(const std::unordered_map<std::string, GLenum>& sourceFiles) {
   return shaderProgram;
 }
 
-export class DefaultShaderProgramProvider {
+export class BasicShaderProgramProvider {
 public:
   const GLuint& program() const {
     if (glIsProgram(_program) == GL_TRUE) return _program;
 
-    _program = buildShaderProgram({{"default.vert", GL_VERTEX_SHADER},
-                                   {"default.frag", GL_FRAGMENT_SHADER}});
+    _program = buildShaderProgram({{"basic.vert", GL_VERTEX_SHADER},
+                                   {"basic.frag", GL_FRAGMENT_SHADER}});
 
     return _program;
   }

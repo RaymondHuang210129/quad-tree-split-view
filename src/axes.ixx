@@ -65,6 +65,6 @@ public:
   }
 
 private:
-  static inline const DefaultShaderProgramProvider shaderProgramProvider{};
+  static inline const BasicShaderProgramProvider shaderProgramProvider{};
   static inline const AxesVaoProvider VaoProvider{};
 };

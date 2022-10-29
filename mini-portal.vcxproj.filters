@@ -31,10 +31,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="src\shaders\default.frag">
+    <None Include="src\shaders\basic.frag">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="src\shaders\default.vert">
+    <None Include="src\shaders\basic.vert">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>
