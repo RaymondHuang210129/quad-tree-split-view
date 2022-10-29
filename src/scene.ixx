@@ -10,16 +10,21 @@ export struct SceneData {};
 
 export class Scene {
 public:
-  void render(const float& viewAspectRatio, const SceneData& data) const {
-    const glm::mat4 view{glm::lookAt(glm::vec3{2, 2, 1}, glm::vec3{0, 0, 0},
-                                     glm::vec3{0, 1, 0})};
+  Scene(const float& viewAspectRatio) {
+    updateViewAspectRatio(viewAspectRatio);
+  }
 
-    const glm::mat4 proj{glm::perspective(glm::radians(45.0f), viewAspectRatio,
-                                          0.0001f, 100.0f)};
-
+  void render(const glm::mat4& view, const SceneData& data) const {
     axesComponent.render(view, proj);
   }
 
+  void updateViewAspectRatio(const float& viewAspectRatio) {
+    proj = glm::mat4{glm::perspective(glm::radians(45.0f), viewAspectRatio,
+                                      0.0001f, 100.0f)};
+  }
+
 private:
+  glm::mat4 proj{};
+
   const AxesComponent axesComponent{};
 };

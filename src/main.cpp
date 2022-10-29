@@ -3,6 +3,8 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/matrix.hpp>
 
 import raii_glfw;
 import scene;
@@ -10,6 +12,10 @@ import scene;
 void framebufferSizeCallback(GLFWwindow* window, int width,
                              int height) noexcept;
 const float viewAspectRatio() noexcept;
+
+struct WindowUserData {
+  Scene* scene;
+};
 
 int main() {
   const RaiiGlfw raiiGlfw{};
@@ -32,12 +38,18 @@ int main() {
   glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
   glEnable(GL_DEPTH_TEST);
 
-  const Scene scene{};
+  Scene scene{viewAspectRatio()};
   SceneData data{};
+
+  WindowUserData userData{&scene};
+  glfwSetWindowUserPointer(window, &userData);
+
+  const glm::mat4 view{
+      glm::lookAt(glm::vec3{2, 2, 1}, glm::vec3{0, 0, 0}, glm::vec3{0, 1, 0})};
 
   while (!glfwWindowShouldClose(window)) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    scene.render(viewAspectRatio(), data);
+    scene.render(view, data);
 
     glfwSwapBuffers(window);
     glfwPollEvents();
@@ -49,6 +61,10 @@ int main() {
 void framebufferSizeCallback(GLFWwindow* window, int width,
                              int height) noexcept {
   glViewport(0, 0, width, height);
+
+  WindowUserData* userData =
+      static_cast<WindowUserData*>(glfwGetWindowUserPointer(window));
+  userData->scene->updateViewAspectRatio(viewAspectRatio());
 }
 
 const float viewAspectRatio() noexcept {
