@@ -22,6 +22,7 @@
     <ClCompile Include="src\grid.ixx" />
     <ClCompile Include="src\axes.ixx" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\wall.ixx" />
     <ClCompile Include="src\raii_glfw.ixx" />
     <ClCompile Include="src\scene.ixx" />
     <ClCompile Include="src\shader.ixx" />

@@ -30,8 +30,10 @@ public:
     std::vector<glm::vec3> vertices{};
 
     for (size_t i = 0; i <= gridCount; i++) {
-      vertices.push_back({gridMin + divisionSize * i, gridMin, 0.0f});
-      vertices.push_back({gridMin + divisionSize * i, gridMax, 0.0f});
+      vertices.emplace_back(
+          glm::vec3{gridMin + divisionSize * i, gridMin, 0.0f});
+      vertices.emplace_back(
+          glm::vec3{gridMin + divisionSize * i, gridMax, 0.0f});
     }
     for (size_t i = 0; i <= gridCount; i++) {
       vertices.push_back({gridMin, gridMin + divisionSize * i, 0.0f});
