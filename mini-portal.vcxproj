@@ -26,6 +26,7 @@
     <ClCompile Include="src\raii_glfw.ixx" />
     <ClCompile Include="src\scene.ixx" />
     <ClCompile Include="src\shader.ixx" />
+    <ClCompile Include="src\user_control.ixx" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shaders\basic.frag" />

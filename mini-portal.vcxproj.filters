@@ -35,6 +35,9 @@
     <ClCompile Include="src\grid.ixx">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
+    <ClCompile Include="src\user_control.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src\wall.ixx">
       <Filter>Source Files\Components</Filter>
     </ClCompile>

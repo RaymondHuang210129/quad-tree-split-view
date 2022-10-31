@@ -8,6 +8,7 @@
 
 import raii_glfw;
 import scene;
+import user_control;
 
 void framebufferSizeCallback(GLFWwindow* window, int width,
                              int height) noexcept;
@@ -44,12 +45,12 @@ int main() {
   WindowUserData userData{&scene};
   glfwSetWindowUserPointer(window, &userData);
 
-  const glm::mat4 view{
-      glm::lookAt(glm::vec3{1, 2, 3}, glm::vec3{0, 0, 0}, glm::vec3{0, 1, 0})};
+  FirstPersonController firstPersonController{window};
 
   while (!glfwWindowShouldClose(window)) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    scene.render(view, data);
+    firstPersonController.updateUserInputs(window);
+    scene.render(firstPersonController.view(), data);
 
     glfwSwapBuffers(window);
     glfwPollEvents();
