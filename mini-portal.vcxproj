@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\floor.ixx" />
     <ClCompile Include="src\grid.ixx" />
     <ClCompile Include="src\axes.ixx" />
     <ClCompile Include="src\main.cpp" />

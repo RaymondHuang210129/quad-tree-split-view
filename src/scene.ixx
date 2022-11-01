@@ -11,9 +11,10 @@ export module scene;
 import axes;
 import grid;
 import wall;
+import floor;
 
 using StaticComponent =
-    std::variant<AxesComponent, GridComponent, WallComponent>;
+    std::variant<AxesComponent, GridComponent, WallComponent, FloorComponent>;
 
 export struct SceneData {};
 
@@ -22,6 +23,7 @@ public:
   Scene(const float& viewAspectRatio) {
     updateViewAspectRatio(viewAspectRatio);
     addWalls();
+    addFloor();
   }
 
   void render(const glm::mat4& view, const SceneData& data) const {
@@ -41,8 +43,7 @@ private:
                                                 GridComponent{}};
 
   void addWalls() {
-    const int height = 3;
-    for (size_t i = 0; i < height; i++) {
+    for (size_t i = 0; i < 3; i++) {
       for (size_t j = 0; j < 10; j++) {
         staticComponents.emplace_back(
             WallComponent{glm::vec3{-0.9 + 0.2 * j, 0.2 + i * 0.4, -1}, false});
@@ -57,6 +58,18 @@ private:
       for (size_t j = 0; j < 5; j++) {
         staticComponents.emplace_back(
             WallComponent{glm::vec3{-0.9 + 0.2 * j, 0.2 + i * 0.4, 0}, false});
+      }
+    }
+  }
+
+  void addFloor() {
+    for (size_t i = 0; i < 10; i++) {
+      for (size_t j = 0; j < 10; j++) {
+        staticComponents.emplace_back(
+            FloorComponent{glm::vec3{-0.9 + 0.2 * i, 0, -0.9 + 0.2 * j}});
+
+        staticComponents.emplace_back(
+            FloorComponent{glm::vec3{-0.9 + 0.2 * i, 1.2, -0.9 + 0.2 * j}});
       }
     }
   }
