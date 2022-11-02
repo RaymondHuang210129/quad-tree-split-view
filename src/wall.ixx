@@ -63,7 +63,7 @@ public:
     model = glm::scale(model, glm::vec3{0.2f, 0.4f, 0.01f});
 
     setUniformToProgram(shaderProgramProvider.program(), "color",
-                        glm::vec4(0.8f));
+                        glm::vec4{0.8f});
   }
 
   void render(const glm::mat4& view, const glm::mat4& proj) const {

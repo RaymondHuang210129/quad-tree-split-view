@@ -63,7 +63,7 @@ public:
 
     setUniformToProgram(shaderProgramProvider.program(), "model", model);
     setUniformToProgram(shaderProgramProvider.program(), "color",
-                        glm::vec4(0.6f));
+                        glm::vec4{0.6f});
   }
 
   void render(const glm::mat4& view, const glm::mat4& proj) const {

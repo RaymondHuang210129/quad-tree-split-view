@@ -40,7 +40,7 @@ int main() {
   glEnable(GL_DEPTH_TEST);
 
   Scene scene{viewAspectRatio()};
-  SceneData data{};
+  SceneController scene_controller{};
 
   WindowUserData userData{&scene};
   glfwSetWindowUserPointer(window, &userData);
@@ -48,9 +48,11 @@ int main() {
   FirstPersonController firstPersonController{window};
 
   while (!glfwWindowShouldClose(window)) {
+    scene_controller.updateSceneData();
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     firstPersonController.updateUserInputs(window);
-    scene.render(firstPersonController.view(), data);
+    scene.render(firstPersonController.view(), scene_controller.sceneData());
 
     glfwSwapBuffers(window);
     glfwPollEvents();

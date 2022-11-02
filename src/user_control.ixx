@@ -20,16 +20,14 @@ public:
     onEscPressed(window);
   }
 
-  const glm::mat4& view() {
-    return _view;
-  }
+  const glm::mat4& view() { return _view; }
 
 private:
   glm::mat4 _view{};
-  glm::vec3 position{glm::vec3{0.0f, 1.0f, 0.8f}};
-  // TODO: check if this is correct
-  double horizontalAngleRadians{-2.08f};
-  double verticalAngleRadians{-1.2f};
+  glm::vec3 position{glm::vec3{0.0f, 0.2f, 0.8f}};
+  // TODO: Set mouse position first to initialize the view angle in center
+  double horizontalAngleRadians{};
+  double verticalAngleRadians{};
   float mouseSpeed{0.005f};
 
   void updateView(GLFWwindow* window) {
@@ -50,13 +48,14 @@ private:
       verticalAngleRadians = -70.0 * M_PI / 180.0;
     }
 
-    const glm::vec3 direction{std::cos(verticalAngleRadians) * std::sin(horizontalAngleRadians),
-                        std::sin(verticalAngleRadians),
-                        std::cos(verticalAngleRadians) * std::cos(horizontalAngleRadians)};
+    const glm::vec3 direction{
+        std::cos(verticalAngleRadians) * std::sin(horizontalAngleRadians),
+        std::sin(verticalAngleRadians),
+        std::cos(verticalAngleRadians) * std::cos(horizontalAngleRadians)};
 
-    const glm::vec3 right{glm::vec3{std::sin(horizontalAngleRadians - 3.14f / 2.0f),
-                        0.0f,
-                        std::cos(horizontalAngleRadians - 3.14f / 2.0f)}};
+    const glm::vec3 right{
+        glm::vec3{std::sin(horizontalAngleRadians - 3.14f / 2.0f), 0.0f,
+                  std::cos(horizontalAngleRadians - 3.14f / 2.0f)}};
 
     const glm::vec3 up{glm::cross(right, direction)};
 

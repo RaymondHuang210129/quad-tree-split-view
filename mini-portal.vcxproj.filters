@@ -44,6 +44,9 @@
     <ClCompile Include="src\floor.ixx">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
+    <ClCompile Include="src\sphere.ixx">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shaders\basic.frag">
