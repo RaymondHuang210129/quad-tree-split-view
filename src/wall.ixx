@@ -1,8 +1,8 @@
 module;
 
 #include <array>
-#include <string>
 #include <cstddef>
+#include <string>
 
 #include <glad/glad.h>
 #include <glm/gtc/matrix_transform.hpp>
@@ -62,14 +62,14 @@ public:
 
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(vertexAttributes),
                  vertices.data(), GL_STATIC_DRAW);
-    glVertexAttribPointer(0, sizeof(vertexAttributes::position) / sizeof(GLfloat),
-                          GL_FLOAT, GL_FALSE,
-                          sizeof(vertexAttributes),
+    glVertexAttribPointer(0,
+                          sizeof(vertexAttributes::position) / sizeof(GLfloat),
+                          GL_FLOAT, GL_FALSE, sizeof(vertexAttributes),
                           (GLvoid*)offsetof(vertexAttributes, position));
-    glVertexAttribPointer(1, sizeof(vertexAttributes::textureCoordinate) / sizeof(GLfloat),
-                          GL_FLOAT, GL_FALSE,
-                          sizeof(vertexAttributes),
-                          (GLvoid*)offsetof(vertexAttributes, textureCoordinate));
+    glVertexAttribPointer(
+        1, sizeof(vertexAttributes::textureCoordinate) / sizeof(GLfloat),
+        GL_FLOAT, GL_FALSE, sizeof(vertexAttributes),
+        (GLvoid*)offsetof(vertexAttributes, textureCoordinate));
 
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
@@ -106,13 +106,13 @@ public:
 
     for (GLint i = 0; i <= 5; i++)
       glDrawArrays(GL_TRIANGLE_FAN, i * 4, 4);
-
   }
 
 private:
-  static inline const BasicShaderProgramProvider shaderProgramProvider{};
+  static inline const TextureShaderProgramProvider shaderProgramProvider{};
   static inline const WallVaoProvider vaoProvider{};
-  static inline const TextureProvider textureProvider{std::string("textures/tile1.jpeg")};
+  static inline const TextureProvider textureProvider{
+      std::string("textures/tile1.jpeg")};
 
   glm::mat4 model{1.0};
 };

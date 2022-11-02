@@ -1,6 +1,8 @@
 module;
 
 #include <array>
+#include <cstddef>
+#include <string>
 
 #include <glad/glad.h>
 #include <glm/gtc/matrix_transform.hpp>
@@ -8,6 +10,7 @@ module;
 export module floor;
 
 import shader;
+import texture;
 
 class FloorVaoProvider {
 public:
@@ -21,30 +24,55 @@ public:
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
-    std::array<glm::vec3, 24> vertices{{{-0.5, -0.5, 0.5},  {-0.5, 0.5, 0.5},
-                                        {0.5, 0.5, 0.5},    {0.5, -0.5, 0.5},
+    typedef struct {
+      glm::vec3 position;
+      glm::vec2 textureCoordinate;
+    } vertexAttributes;
 
-                                        {-0.5, -0.5, -0.5}, {-0.5, 0.5, -0.5},
-                                        {0.5, 0.5, -0.5},   {0.5, -0.5, -0.5},
+    std::array<vertexAttributes, 24> vertices{
+        {{{-0.5, -0.5, 0.5}, {0.0, 0.0}},
+         {{-0.5, 0.5, 0.5}, {0.0, 1.0}},
+         {{0.5, 0.5, 0.5}, {1.0, 1.0}},
+         {{0.5, -0.5, 0.5}, {1.0, 0.0}}, // upper z plane
 
-                                        {0.5, 0.5, -0.5},   {-0.5, 0.5, -0.5},
-                                        {-0.5, 0.5, 0.5},   {0.5, 0.5, 0.5},
+         {{-0.5, -0.5, -0.5}, {0.0, 0.0}},
+         {{-0.5, 0.5, -0.5}, {0.0, 1.0}},
+         {{0.5, 0.5, -0.5}, {1.0, 1.0}},
+         {{0.5, -0.5, -0.5}, {1.0, 0.0}}, // lower z plane
 
-                                        {-0.5, -0.5, 0.5},  {-0.5, -0.5, -0.5},
-                                        {0.5, -0.5, -0.5},  {0.5, -0.5, 0.5},
+         {{0.5, 0.5, -0.5}, {0.0, 0.0}},
+         {{-0.5, 0.5, -0.5}, {0.0, 1.0}},
+         {{-0.5, 0.5, 0.5}, {1.0, 1.0}},
+         {{0.5, 0.5, 0.5}, {1.0, 0.0}}, // right y plane
 
-                                        {0.5, 0.5, -0.5},   {0.5, -0.5, 0.5},
-                                        {0.5, 0.5, -0.5},   {0.5, -0.5, 0.5},
+         {{-0.5, -0.5, 0.5}, {0.0, 0.0}},
+         {{-0.5, -0.5, -0.5}, {0.0, 1.0}},
+         {{0.5, -0.5, -0.5}, {1.0, 1.0}},
+         {{0.5, -0.5, 0.5}, {1.0, 0.0}}, // left y plane
 
-                                        {-0.5, 0.5, -0.5},  {-0.5, -0.5, 0.5},
-                                        {-0.5, 0.5, -0.5},  {-0.5, -0.5, 0.5}}};
+         {{0.5, 0.5, -0.5}, {0.0, 0.0}},
+         {{0.5, -0.5, 0.5}, {0.0, 1.0}},
+         {{0.5, 0.5, -0.5}, {1.0, 1.0}},
+         {{0.5, -0.5, 0.5}, {1.0, 0.0}}, // front x plane
 
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3),
+         {{-0.5, 0.5, -0.5}, {0.0, 0.0}},
+         {{-0.5, -0.5, 0.5}, {0.0, 1.0}},
+         {{-0.5, 0.5, -0.5}, {1.0, 1.0}},
+         {{-0.5, -0.5, 0.5}, {1.0, 0.0}}}}; // back x plane
+
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(vertexAttributes),
                  vertices.data(), GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
-                          static_cast<void*>(0));
+    glVertexAttribPointer(0,
+                          sizeof(vertexAttributes::position) / sizeof(GLfloat),
+                          GL_FLOAT, GL_FALSE, sizeof(vertexAttributes),
+                          (GLvoid*)offsetof(vertexAttributes, position));
+    glVertexAttribPointer(
+        1, sizeof(vertexAttributes::textureCoordinate) / sizeof(GLfloat),
+        GL_FLOAT, GL_FALSE, sizeof(vertexAttributes),
+        (GLvoid*)offsetof(vertexAttributes, textureCoordinate));
 
     glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
 
     return _vao;
   }
@@ -65,20 +93,23 @@ public:
 
   void render(const glm::mat4& view, const glm::mat4& proj) const {
     glBindVertexArray(vaoProvider.vao());
+    glBindTexture(GL_TEXTURE_2D, textureProvider.texture());
     glUseProgram(shaderProgramProvider.program());
     setUniformToProgram(shaderProgramProvider.program(), "model", model);
     setUniformToProgram(shaderProgramProvider.program(), "view", view);
     setUniformToProgram(shaderProgramProvider.program(), "proj", proj);
 
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     for (GLint i = 0; i <= 5; i++)
       glDrawArrays(GL_TRIANGLE_FAN, i * 4, 4);
   }
 
 private:
-  static inline const BasicShaderProgramProvider shaderProgramProvider{};
+  static inline const TextureShaderProgramProvider shaderProgramProvider{};
   static inline const FloorVaoProvider vaoProvider{};
+  static inline const TextureProvider textureProvider{
+      std::string("textures/tile2.jpeg")};
 
   glm::mat4 model{1.0};
 };

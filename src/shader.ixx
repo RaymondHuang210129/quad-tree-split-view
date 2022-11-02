@@ -42,8 +42,23 @@ public:
   const GLuint& program() const {
     if (glIsProgram(_program) == GL_TRUE) return _program;
 
-    _program = buildShaderProgram({{"basic.vert", GL_VERTEX_SHADER},
-                                   {"basic.frag", GL_FRAGMENT_SHADER}});
+    _program = buildShaderProgram(
+        {{"basic.vert", GL_VERTEX_SHADER}, {"basic.frag", GL_FRAGMENT_SHADER}});
+
+    return _program;
+  }
+
+private:
+  mutable GLuint _program{};
+};
+
+export class TextureShaderProgramProvider {
+public:
+  const GLuint& program() const {
+    if (glIsProgram(_program) == GL_TRUE) return _program;
+
+    _program = buildShaderProgram({{"texture.vert", GL_VERTEX_SHADER},
+                                   {"texture.frag", GL_FRAGMENT_SHADER}});
 
     return _program;
   }
