@@ -44,6 +44,9 @@
     <ClCompile Include="src\floor.ixx">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
+    <ClCompile Include="src\texture.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src\sphere.ixx">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
@@ -55,5 +58,19 @@
     <None Include="src\shaders\basic.vert">
       <Filter>Shader Files</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="textures\tile1.jpeg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\tile2.jpeg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\tile3.jpeg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\tile4.jpeg">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

@@ -23,6 +23,7 @@
     <ClCompile Include="src\grid.ixx" />
     <ClCompile Include="src\axes.ixx" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\texture.ixx" />
     <ClCompile Include="src\sphere.ixx" />
     <ClCompile Include="src\wall.ixx" />
     <ClCompile Include="src\raii_glfw.ixx" />
@@ -33,6 +34,12 @@
   <ItemGroup>
     <None Include="src\shaders\basic.frag" />
     <None Include="src\shaders\basic.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="textures\tile1.jpeg" />
+    <Image Include="textures\tile2.jpeg" />
+    <Image Include="textures\tile3.jpeg" />
+    <Image Include="textures\tile4.jpeg" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
