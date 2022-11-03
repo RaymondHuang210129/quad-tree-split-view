@@ -117,7 +117,5 @@ void setUniformToProgram(const GLuint& shaderProgram, const std::string& name,
   } else if constexpr (std::is_same_v<T, glm::vec4>) {
     glUniform4fv(glGetUniformLocation(shaderProgram, name.c_str()), 1,
                  glm::value_ptr(data));
-  } else {
-    throw std::runtime_error("incompatible type");
   }
 }
