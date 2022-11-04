@@ -52,7 +52,8 @@ int main() {
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     firstPersonController.updateUserInputs(window);
-    scene.render(firstPersonController.view(), scene_controller.sceneData());
+    scene.render(firstPersonController.view(), scene_controller.sceneData(),
+                 firstPersonController.position());
 
     glfwSwapBuffers(window);
     glfwPollEvents();

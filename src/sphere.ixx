@@ -18,7 +18,7 @@ const std::vector<glm::vec3> tessellateIcosahedron(const size_t& divisionCount);
 const std::vector<glm::vec3>
 subdivideTriangle(const std::array<glm::vec3, 3>& triangle, const size_t& step);
 
-class SphereVaoProvider {
+export class SphereVaoProvider {
 public:
   const std::vector<glm::vec3> vertices{tessellateIcosahedron(3)};
 

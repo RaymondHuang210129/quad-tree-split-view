@@ -13,9 +13,11 @@ import grid;
 import wall;
 import floor;
 import sphere;
+import light_source;
 
 using StaticComponent =
-    std::variant<AxesComponent, GridComponent, WallComponent, FloorComponent>;
+    std::variant<AxesComponent, GridComponent, LightSourceComponent>;
+using LighingComponent = std::variant<FloorComponent, WallComponent>;
 
 export struct SceneData {
   std::array<SphereData, 3> spheres;
@@ -29,9 +31,20 @@ public:
     addFloor();
   }
 
-  void render(const glm::mat4& view, const SceneData& data) const {
+  void render(const glm::mat4& view, const SceneData& data,
+              const glm::vec3& viewPosition) const {
     for (const auto& component : staticComponents)
       std::visit([&](const auto& c) { c.render(view, proj); }, component);
+
+    for (const auto& component : lightingComponents) {
+      std::visit(
+          [&](const auto& c) {
+            c.render(view, proj, viewPosition, lightSource.position());
+          },
+          component);
+    }
+
+    lightSource.render(view, proj);
 
     for (size_t i = 0; const auto& sphereComponent : sphereComponents) {
       sphereComponent.render(view, proj, data.spheres.at(i));
@@ -46,31 +59,31 @@ public:
 
 private:
   glm::mat4 proj{};
-  std::vector<StaticComponent> staticComponents{
-      AxesComponent{},
-      GridComponent{},
-  };
+  std::vector<StaticComponent> staticComponents{AxesComponent{},
+                                                GridComponent{}};
+  std::vector<LighingComponent> lightingComponents{};
   std::vector<SphereComponent> sphereComponents{
       SphereComponent{glm::vec4{0.5, 0.3, 0.7, 1.0}},
       SphereComponent{glm::vec4{0.7, 0.3, 0.3, 1.0}},
       SphereComponent{glm::vec4{0.5, 0.7, 0.4, 1.0}},
   };
+  LightSourceComponent lightSource{glm::vec3{0.3f, 0.99f, 0.8f}};
 
   void addWalls() {
     for (size_t i = 0; i < 3; i++) {
       for (size_t j = 0; j < 10; j++) {
-        staticComponents.emplace_back(
+        lightingComponents.emplace_back(
             WallComponent{glm::vec3{-0.9 + 0.2 * j, 0.2 + i * 0.4, -1}, false});
-        staticComponents.emplace_back(
+        lightingComponents.emplace_back(
             WallComponent{glm::vec3{-0.9 + 0.2 * j, 0.2 + i * 0.4, 1}, false});
-        staticComponents.emplace_back(
+        lightingComponents.emplace_back(
             WallComponent{glm::vec3{-1, 0.2 + i * 0.4, -0.9 + 0.2 * j}, true});
-        staticComponents.emplace_back(
+        lightingComponents.emplace_back(
             WallComponent{glm::vec3{1, 0.2 + i * 0.4, -0.9 + 0.2 * j}, true});
       }
 
       for (size_t j = 0; j < 5; j++) {
-        staticComponents.emplace_back(
+        lightingComponents.emplace_back(
             WallComponent{glm::vec3{-0.9 + 0.2 * j, 0.2 + i * 0.4, 0}, false});
       }
     }
@@ -79,10 +92,10 @@ private:
   void addFloor() {
     for (size_t i = 0; i < 10; i++) {
       for (size_t j = 0; j < 10; j++) {
-        staticComponents.emplace_back(
+        lightingComponents.emplace_back(
             FloorComponent{glm::vec3{-0.9 + 0.2 * i, 0, -0.9 + 0.2 * j}});
 
-        staticComponents.emplace_back(
+        lightingComponents.emplace_back(
             FloorComponent{glm::vec3{-0.9 + 0.2 * i, 1.2, -0.9 + 0.2 * j}});
       }
     }

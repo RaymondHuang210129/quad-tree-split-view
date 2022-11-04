@@ -22,9 +22,11 @@ public:
 
   const glm::mat4& view() { return _view; }
 
+  const glm::vec3& position() { return _position; }
+
 private:
   glm::mat4 _view{};
-  glm::vec3 position{glm::vec3{0.0f, 0.2f, 0.8f}};
+  glm::vec3 _position{glm::vec3{0.0f, 0.2f, 0.8f}};
   // TODO: Set mouse position first to initialize the view angle in center
   double horizontalAngleRadians{};
   double verticalAngleRadians{};
@@ -59,7 +61,7 @@ private:
 
     const glm::vec3 up{glm::cross(right, direction)};
 
-    _view = glm::lookAt(position, position + direction, up);
+    _view = glm::lookAt(_position, _position + direction, up);
   }
 
   void onEscPressed(GLFWwindow* window) {

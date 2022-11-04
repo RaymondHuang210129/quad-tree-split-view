@@ -22,6 +22,7 @@
     <ClCompile Include="src\floor.ixx" />
     <ClCompile Include="src\grid.ixx" />
     <ClCompile Include="src\axes.ixx" />
+    <ClCompile Include="src\light_source.ixx" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\texture.ixx" />
     <ClCompile Include="src\sphere.ixx" />
@@ -34,6 +35,10 @@
   <ItemGroup>
     <None Include="src\shaders\basic.frag" />
     <None Include="src\shaders\basic.vert" />
+    <None Include="src\shaders\lighting.frag" />
+    <None Include="src\shaders\lighting.vert" />
+    <None Include="src\shaders\light_source.frag" />
+    <None Include="src\shaders\light_source.vert" />
     <None Include="src\shaders\texture.frag" />
     <None Include="src\shaders\texture.vert" />
   </ItemGroup>

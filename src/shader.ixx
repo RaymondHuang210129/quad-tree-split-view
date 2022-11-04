@@ -67,6 +67,36 @@ private:
   mutable GLuint _program{};
 };
 
+export class LightingShaderProgramProvider {
+public:
+  const GLuint& program() const {
+    if (glIsProgram(_program) == GL_TRUE) return _program;
+
+    _program = buildShaderProgram({{"lighting.vert", GL_VERTEX_SHADER},
+                                   {"lighting.frag", GL_FRAGMENT_SHADER}});
+
+    return _program;
+  }
+
+private:
+  mutable GLuint _program{};
+};
+
+export class LightSourceShaderProgramProvider {
+public:
+  const GLuint& program() const {
+    if (glIsProgram(_program) == GL_TRUE) return _program;
+
+    _program = buildShaderProgram({{"light_source.vert", GL_VERTEX_SHADER},
+                                   {"light_source.frag", GL_FRAGMENT_SHADER}});
+
+    return _program;
+  }
+
+private:
+  mutable GLuint _program{};
+};
+
 const std::string readShaderSourceFile(const std::string& filename) {
   const auto sourcePath = std::filesystem::path("src") / "shaders";
   std::ifstream shaderFile(sourcePath / filename);
@@ -105,7 +135,8 @@ void checkShaderLink(const auto shaderProgram) {
 
 template <typename T>
 concept UniformAcceptable =
-    std::is_same_v<T, glm::mat4> || std::is_same_v<T, glm::vec4>;
+    std::is_same_v<T, glm::mat4> || std::is_same_v<T, glm::vec4> ||
+    std::is_same_v<T, glm::vec3> || std::is_same_v<T, GLfloat>;
 
 export template <UniformAcceptable T>
 void setUniformToProgram(const GLuint& shaderProgram, const std::string& name,
@@ -117,5 +148,10 @@ void setUniformToProgram(const GLuint& shaderProgram, const std::string& name,
   } else if constexpr (std::is_same_v<T, glm::vec4>) {
     glUniform4fv(glGetUniformLocation(shaderProgram, name.c_str()), 1,
                  glm::value_ptr(data));
+  } else if constexpr (std::is_same_v<T, glm::vec3>) {
+    glUniform3fv(glGetUniformLocation(shaderProgram, name.c_str()), 1,
+                 glm::value_ptr(data));
+  } else if constexpr (std::is_same_v<T, GLfloat>) {
+    glUniform1f(glGetUniformLocation(shaderProgram, name.c_str()), data);
   }
 }

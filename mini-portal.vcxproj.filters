@@ -50,6 +50,9 @@
     <ClCompile Include="src\sphere.ixx">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
+    <ClCompile Include="src\light_source.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shaders\basic.frag">
@@ -62,6 +65,18 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="src\shaders\texture.vert">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="src\shaders\light_source.frag">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="src\shaders\light_source.vert">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="src\shaders\lighting.frag">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="src\shaders\lighting.vert">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>
