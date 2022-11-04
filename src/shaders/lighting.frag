@@ -30,7 +30,7 @@ vec3 calcPointLight(vec3 normal, vec3 viewDirection) {
 
   // specular
   vec3 reflectDireciton = reflect(-lightDirection, normal);
-  float shininess = pow(max(dot(viewDirection, reflectDireciton), 0.0), 5);
+  float shininess = pow(max(dot(viewDirection, reflectDireciton), 0.0), 20);
   vec3 specular = vec3(texture(tex, textureCoord)) * shininess * lightSpecular;
 
   // ambient
