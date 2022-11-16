@@ -12,17 +12,24 @@ import user_control;
 
 void framebufferSizeCallback(GLFWwindow* window, int width,
                              int height) noexcept;
-const float viewAspectRatio() noexcept;
+const float viewAspectRatio(const int& width, const int& height);
 
 struct WindowUserData {
+  int width;
+  int height;
   Scene* scene;
 };
+
+const int NUM_CAMERAS{2};
 
 int main() {
   const RaiiGlfw raiiGlfw{};
 
-  GLFWwindow* window =
-      glfwCreateWindow(800, 600, "Mini Portal", nullptr, nullptr);
+  const int defaultWidth{1080};
+  const int defaultHeight{720};
+
+  GLFWwindow* window = glfwCreateWindow(defaultWidth, defaultHeight,
+                                        "Mini Portal", nullptr, nullptr);
   if (window == NULL) {
     std::cout << "Failed to create GLFW window" << std::endl;
     return -1;
@@ -34,25 +41,34 @@ int main() {
     return -1;
   }
 
-  glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
-
   glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
   glEnable(GL_DEPTH_TEST);
 
-  Scene scene{viewAspectRatio()};
-  SceneController scene_controller{};
+  Scene scene{viewAspectRatio(defaultWidth, defaultHeight)};
+  SceneController sceneController{};
 
-  WindowUserData userData{&scene};
+  WindowUserData userData{defaultWidth, defaultHeight, &scene};
   glfwSetWindowUserPointer(window, &userData);
 
+  glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
+
   FirstPersonController firstPersonController{window};
+  const glm::mat4 fixedView{
+      glm::lookAt(glm::vec3{0.3, 0.6, 0.9}, {0, 0, 0}, {0, 1, 0})};
 
   while (!glfwWindowShouldClose(window)) {
-    scene_controller.updateSceneData();
+    sceneController.updateSceneData();
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glViewport(0, 0, userData.width / NUM_CAMERAS, userData.height);
     firstPersonController.updateUserInputs(window);
-    scene.render(firstPersonController.view(), scene_controller.sceneData(),
+    scene.render(firstPersonController.view(), sceneController.sceneData(),
+                 firstPersonController.position());
+
+    glViewport(userData.width / NUM_CAMERAS, 0, userData.width / NUM_CAMERAS,
+               userData.height);
+    scene.render(fixedView, sceneController.sceneData(),
                  firstPersonController.position());
 
     glfwSwapBuffers(window);
@@ -64,16 +80,15 @@ int main() {
 
 void framebufferSizeCallback(GLFWwindow* window, int width,
                              int height) noexcept {
-  glViewport(0, 0, width, height);
-
   WindowUserData* userData =
       static_cast<WindowUserData*>(glfwGetWindowUserPointer(window));
-  userData->scene->updateViewAspectRatio(viewAspectRatio());
+  userData->width = width;
+  userData->height = height;
+  userData->scene->updateViewAspectRatio(viewAspectRatio(width, height));
 }
 
-const float viewAspectRatio() noexcept {
-  std::array<GLint, 4> viewport{};
-  glGetIntegerv(GL_VIEWPORT, viewport.data());
-  return {static_cast<float>(viewport.at(2) - viewport.at(0)) /
-          (viewport.at(3) - viewport.at(1))};
+const float viewAspectRatio(const int& width, const int& height) {
+  if (NUM_CAMERAS == 0) throw std::runtime_error("NUM_CAMERAS is 0");
+  if (height == 0) throw std::runtime_error("height is 0");
+  return (static_cast<float>(width) / NUM_CAMERAS) / height;
 }
