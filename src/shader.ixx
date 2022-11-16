@@ -82,6 +82,22 @@ private:
   mutable GLuint _program{};
 };
 
+export class SphereLightingShaderProgramProvider {
+public:
+  const GLuint& program() const {
+    if (glIsProgram(_program) == GL_TRUE) return _program;
+
+    _program =
+        buildShaderProgram({{"sphere_lighting.vert", GL_VERTEX_SHADER},
+                            {"sphere_lighting.frag", GL_FRAGMENT_SHADER}});
+
+    return _program;
+  }
+
+private:
+  mutable GLuint _program{};
+};
+
 export class LightSourceShaderProgramProvider {
 public:
   const GLuint& program() const {

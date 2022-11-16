@@ -51,10 +51,20 @@ export struct SphereData {
 
 export class SphereComponent {
 public:
-  SphereComponent(const glm::vec4& color) : _color(color) {}
+  SphereComponent(const glm::vec4& color) : _color(color) {
+    setUniformToProgram(shaderProgramProvider.program(), "lightAmbient",
+                        glm::vec3{0.2f});
+    setUniformToProgram(shaderProgramProvider.program(), "lightDiffuse",
+                        glm::vec3{1.0f});
+    setUniformToProgram(shaderProgramProvider.program(), "lightSpecular",
+                        glm::vec3{1.0f});
+    setUniformToProgram(shaderProgramProvider.program(), "luminousIntensity",
+                        GLfloat(1));
+  }
 
   void render(const glm::mat4& view, const glm::mat4& proj,
-              const SphereData& data) const {
+              const SphereData& data, const glm::vec3& viewPosition,
+              const glm::vec3& lightPosition) const {
     glBindVertexArray(vaoProvider.vao());
     glUseProgram(shaderProgramProvider.program());
 
@@ -66,13 +76,18 @@ public:
     setUniformToProgram(shaderProgramProvider.program(), "view", view);
     setUniformToProgram(shaderProgramProvider.program(), "proj", proj);
     setUniformToProgram(shaderProgramProvider.program(), "color", _color);
+    setUniformToProgram(shaderProgramProvider.program(), "viewPosition",
+                        viewPosition);
+    setUniformToProgram(shaderProgramProvider.program(), "lightPosition",
+                        lightPosition);
 
-    glDrawArrays(GL_LINE_LOOP, 0,
+    glDrawArrays(GL_TRIANGLES, 0,
                  static_cast<GLsizei>(vaoProvider.vertices.size()));
   }
 
 private:
-  static inline const BasicShaderProgramProvider shaderProgramProvider{};
+  static inline const SphereLightingShaderProgramProvider
+      shaderProgramProvider{};
   static inline const SphereVaoProvider vaoProvider{};
 
   const glm::vec4 _color{1.0f};

@@ -47,7 +47,8 @@ public:
     lightSource.render(view, proj);
 
     for (size_t i = 0; const auto& sphereComponent : sphereComponents) {
-      sphereComponent.render(view, proj, data.spheres.at(i));
+      sphereComponent.render(view, proj, data.spheres.at(i), viewPosition,
+                             lightSource.position());
       i++;
     }
   }

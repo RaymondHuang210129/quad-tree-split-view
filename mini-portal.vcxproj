@@ -39,6 +39,8 @@
     <None Include="src\shaders\lighting.vert" />
     <None Include="src\shaders\light_source.frag" />
     <None Include="src\shaders\light_source.vert" />
+    <None Include="src\shaders\sphere_lighting.frag" />
+    <None Include="src\shaders\sphere_lighting.vert" />
     <None Include="src\shaders\texture.frag" />
     <None Include="src\shaders\texture.vert" />
   </ItemGroup>

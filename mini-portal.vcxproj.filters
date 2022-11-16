@@ -79,6 +79,12 @@
     <None Include="src\shaders\lighting.vert">
       <Filter>Shader Files</Filter>
     </None>
+    <None Include="src\shaders\sphere_lighting.frag">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="src\shaders\sphere_lighting.vert">
+      <Filter>Shader Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="textures\tile1.jpeg">
