@@ -1,5 +1,7 @@
 #include <array>
 #include <iostream>
+#include <random>
+#include <vector>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -9,23 +11,20 @@
 import raii_glfw;
 import scene;
 import user_control;
+import quad_tree;
 
-void framebufferSizeCallback(GLFWwindow* window, int width,
-                             int height) noexcept;
 const float viewAspectRatio(const int& width, const int& height);
+void keyCallback(GLFWwindow* window, int key, int scancode, int action,
+                 int mods) noexcept;
 
 struct WindowUserData {
-  int width;
-  int height;
-  Scene* scene;
+  std::vector<QuadTreeNode> quadTree;
 };
-
-const int NUM_CAMERAS{2};
 
 int main() {
   const RaiiGlfw raiiGlfw{};
 
-  const int defaultWidth{1080};
+  const int defaultWidth{720};
   const int defaultHeight{720};
 
   GLFWwindow* window = glfwCreateWindow(defaultWidth, defaultHeight,
@@ -47,29 +46,41 @@ int main() {
   Scene scene{viewAspectRatio(defaultWidth, defaultHeight)};
   SceneController sceneController{};
 
-  WindowUserData userData{defaultWidth, defaultHeight, &scene};
+  WindowUserData userData{
+      .quadTree = {{.width = 1,
+                    .height = 1,
+                    .x = 0,
+                    .y = 0,
+                    .firstPersonController =
+                        FirstPersonController{window,
+                                              glm::vec3{0.0f, 0.2f, 0.8f}}}},
+  };
   glfwSetWindowUserPointer(window, &userData);
 
-  glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
-
-  FirstPersonController firstPersonController{window};
-  const glm::mat4 fixedView{
-      glm::lookAt(glm::vec3{0.3, 0.6, 0.9}, {0, 0, 0}, {0, 1, 0})};
+  glfwSetKeyCallback(window, keyCallback);
 
   while (!glfwWindowShouldClose(window)) {
     sceneController.updateSceneData();
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glViewport(0, 0, userData.width / NUM_CAMERAS, userData.height);
-    firstPersonController.updateUserInputs(window);
-    scene.render(firstPersonController.view(), sceneController.sceneData(),
-                 firstPersonController.position());
+    for (auto& leaf : getQuadTreeLeaves(userData.quadTree)) {
+      leaf.firstPersonController.updateView();
 
-    glViewport(userData.width / NUM_CAMERAS, 0, userData.width / NUM_CAMERAS,
-               userData.height);
-    scene.render(fixedView, sceneController.sceneData(),
-                 firstPersonController.position());
+      int windowWidth{}, windowHeight{};
+      glfwGetWindowSize(window, &windowWidth, &windowHeight);
+
+      glViewport(static_cast<GLint>(windowWidth * leaf.x),
+                 static_cast<GLint>(windowHeight * leaf.y),
+                 static_cast<GLsizei>(windowWidth * leaf.width),
+                 static_cast<GLsizei>(windowHeight * leaf.height));
+      scene.updateViewAspectRatio(
+          viewAspectRatio(static_cast<int>(windowWidth * leaf.width),
+                          static_cast<int>(windowHeight * leaf.height)));
+      scene.render(leaf.firstPersonController.view(),
+                   sceneController.sceneData(),
+                   leaf.firstPersonController.position());
+    }
 
     glfwSwapBuffers(window);
     glfwPollEvents();
@@ -78,17 +89,27 @@ int main() {
   return 0;
 }
 
-void framebufferSizeCallback(GLFWwindow* window, int width,
-                             int height) noexcept {
-  WindowUserData* userData =
-      static_cast<WindowUserData*>(glfwGetWindowUserPointer(window));
-  userData->width = width;
-  userData->height = height;
-  userData->scene->updateViewAspectRatio(viewAspectRatio(width, height));
+const float viewAspectRatio(const int& width, const int& height) {
+  if (height == 0) throw std::runtime_error("height is 0");
+  return static_cast<float>(width) / height;
 }
 
-const float viewAspectRatio(const int& width, const int& height) {
-  if (NUM_CAMERAS == 0) throw std::runtime_error("NUM_CAMERAS is 0");
-  if (height == 0) throw std::runtime_error("height is 0");
-  return (static_cast<float>(width) / NUM_CAMERAS) / height;
+void keyCallback(GLFWwindow* window, int key, int scancode, int action,
+                 int mods) noexcept {
+  if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+    glfwSetWindowShouldClose(window, true);
+
+  if (key == GLFW_KEY_UP && action == GLFW_PRESS) {
+    WindowUserData* userData =
+        static_cast<WindowUserData*>(glfwGetWindowUserPointer(window));
+    growQuadTree(userData->quadTree, window);
+    growQuadTree(userData->quadTree, window);
+  }
+
+  if (key == GLFW_KEY_DOWN && action == GLFW_PRESS) {
+    WindowUserData* userData =
+        static_cast<WindowUserData*>(glfwGetWindowUserPointer(window));
+    shrinkQuadTree(userData->quadTree);
+    shrinkQuadTree(userData->quadTree);
+  }
 }

@@ -53,6 +53,9 @@
     <ClCompile Include="src\light_source.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\quad-tree.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shaders\basic.frag">

@@ -11,44 +11,33 @@ export module user_control;
 
 export class FirstPersonController {
 public:
-  FirstPersonController(GLFWwindow* window) {
+  FirstPersonController(GLFWwindow* window, const glm::vec3& position)
+      : window{window}, _position{position} {
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-  }
-
-  void updateUserInputs(GLFWwindow* window) {
-    updateView(window);
-    onEscPressed(window);
   }
 
   const glm::mat4& view() { return _view; }
 
   const glm::vec3& position() { return _position; }
 
-private:
-  glm::mat4 _view{};
-  glm::vec3 _position{glm::vec3{0.0f, 0.2f, 0.8f}};
-  // TODO: Set mouse position first to initialize the view angle in center
-  double horizontalAngleRadians{};
-  double verticalAngleRadians{};
-  float mouseSpeed{0.005f};
-
-  void updateView(GLFWwindow* window) {
+  void updateView() {
     double xPos{}, yPos{};
-    int width{}, height{};
     glfwGetCursorPos(window, &xPos, &yPos);
-    glfwGetWindowSize(window, &width, &height);
+    int windowWidth{}, windowHeight{};
+    glfwGetWindowSize(window, &windowWidth, &windowHeight);
 
-    glfwSetCursorPos(window, 0.5 * width, 0.5 * height);
+    const auto xDelta{0.5 * windowWidth - xPos};
+    const auto yDelta{0.5 * windowHeight - yPos};
 
-    horizontalAngleRadians += mouseSpeed * (0.5 * width - xPos);
-    verticalAngleRadians += mouseSpeed * (0.5 * height - yPos);
+    float mouseSpeed{0.005f};
 
-    if (verticalAngleRadians >= (80.0 * M_PI / 180.0)) {
+    horizontalAngleRadians += mouseSpeed * xDelta;
+    verticalAngleRadians += mouseSpeed * yDelta;
+
+    if (verticalAngleRadians >= (80.0 * M_PI / 180.0))
       verticalAngleRadians = 80.0 * M_PI / 180.0;
-    }
-    if (verticalAngleRadians <= (-70.0 * M_PI / 180.0)) {
+    if (verticalAngleRadians <= (-70.0 * M_PI / 180.0))
       verticalAngleRadians = -70.0 * M_PI / 180.0;
-    }
 
     const glm::vec3 direction{
         std::cos(verticalAngleRadians) * std::sin(horizontalAngleRadians),
@@ -64,9 +53,10 @@ private:
     _view = glm::lookAt(_position, _position + direction, up);
   }
 
-  void onEscPressed(GLFWwindow* window) {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-      glfwSetWindowShouldClose(window, true);
-    }
-  }
+private:
+  GLFWwindow* window{};
+  glm::mat4 _view{};
+  glm::vec3 _position{};
+  double horizontalAngleRadians{};
+  double verticalAngleRadians{};
 };

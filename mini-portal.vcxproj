@@ -24,6 +24,7 @@
     <ClCompile Include="src\axes.ixx" />
     <ClCompile Include="src\light_source.ixx" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\quad-tree.ixx" />
     <ClCompile Include="src\texture.ixx" />
     <ClCompile Include="src\sphere.ixx" />
     <ClCompile Include="src\wall.ixx" />
