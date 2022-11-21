@@ -52,21 +52,6 @@ private:
   mutable GLuint _program{};
 };
 
-export class TextureShaderProgramProvider {
-public:
-  const GLuint& program() const {
-    if (glIsProgram(_program) == GL_TRUE) return _program;
-
-    _program = buildShaderProgram({{"texture.vert", GL_VERTEX_SHADER},
-                                   {"texture.frag", GL_FRAGMENT_SHADER}});
-
-    return _program;
-  }
-
-private:
-  mutable GLuint _program{};
-};
-
 export class LightingShaderProgramProvider {
 public:
   const GLuint& program() const {
@@ -90,21 +75,6 @@ public:
     _program =
         buildShaderProgram({{"sphere_lighting.vert", GL_VERTEX_SHADER},
                             {"sphere_lighting.frag", GL_FRAGMENT_SHADER}});
-
-    return _program;
-  }
-
-private:
-  mutable GLuint _program{};
-};
-
-export class LightSourceShaderProgramProvider {
-public:
-  const GLuint& program() const {
-    if (glIsProgram(_program) == GL_TRUE) return _program;
-
-    _program = buildShaderProgram({{"light_source.vert", GL_VERTEX_SHADER},
-                                   {"light_source.frag", GL_FRAGMENT_SHADER}});
 
     return _program;
   }
