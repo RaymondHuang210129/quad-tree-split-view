@@ -30,6 +30,7 @@ public:
     setUniformToProgram(shaderProgramProvider.program(), "model", model);
     setUniformToProgram(shaderProgramProvider.program(), "view", view);
     setUniformToProgram(shaderProgramProvider.program(), "proj", proj);
+    setUniformToProgram(shaderProgramProvider.program(), "color", _color);
 
     glDrawArrays(GL_TRIANGLES, 0,
                  static_cast<GLsizei>(vaoProvider.vertices.size()));
@@ -38,9 +39,10 @@ public:
   const glm::vec3& position() const { return _position; }
 
 private:
-  static inline const LightSourceShaderProgramProvider shaderProgramProvider{};
+  static inline const BasicShaderProgramProvider shaderProgramProvider{};
   static inline const SphereVaoProvider vaoProvider{};
 
   glm::vec3 _position{0.0};
   glm::mat4 model{1.0};
+  const glm::vec4 _color{1.0f};
 };

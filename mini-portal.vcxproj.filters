@@ -64,18 +64,6 @@
     <None Include="src\shaders\basic.vert">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="src\shaders\texture.frag">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="src\shaders\texture.vert">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="src\shaders\light_source.frag">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="src\shaders\light_source.vert">
-      <Filter>Shader Files</Filter>
-    </None>
     <None Include="src\shaders\lighting.frag">
       <Filter>Shader Files</Filter>
     </None>
