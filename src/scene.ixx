@@ -21,6 +21,7 @@ using LighingComponent = std::variant<FloorComponent, WallComponent>;
 
 export struct SceneData {
   std::array<SphereData, 3> spheres;
+  bool isBirdView;
 };
 
 export class Scene {
@@ -29,6 +30,7 @@ public:
     updateViewAspectRatio(viewAspectRatio);
     addWalls();
     addFloor();
+    addCeiling();
   }
 
   void render(const glm::mat4& view, const SceneData& data,
@@ -36,13 +38,12 @@ public:
     for (const auto& component : staticComponents)
       std::visit([&](const auto& c) { c.render(view, proj); }, component);
 
-    for (const auto& component : lightingComponents) {
+    for (const auto& component : lightingComponents)
       std::visit(
           [&](const auto& c) {
             c.render(view, proj, viewPosition, lightSource.position());
           },
           component);
-    }
 
     lightSource.render(view, proj);
 
@@ -50,6 +51,13 @@ public:
       sphereComponent.render(view, proj, data.spheres.at(i), viewPosition,
                              lightSource.position());
       i++;
+    }
+
+    if (!data.isBirdView) {
+      for (const auto& cellingComponent : cellingComponents) {
+        cellingComponent.render(view, proj, viewPosition,
+                                lightSource.position());
+      }
     }
   }
 
@@ -63,6 +71,7 @@ private:
   std::vector<StaticComponent> staticComponents{AxesComponent{},
                                                 GridComponent{}};
   std::vector<LighingComponent> lightingComponents{};
+  std::vector<FloorComponent> cellingComponents{};
   std::vector<SphereComponent> sphereComponents{
       SphereComponent{glm::vec4{0.5, 0.3, 0.7, 1.0}},
       SphereComponent{glm::vec4{0.7, 0.3, 0.3, 1.0}},
@@ -91,21 +100,25 @@ private:
   }
 
   void addFloor() {
-    for (size_t i = 0; i < 10; i++) {
-      for (size_t j = 0; j < 10; j++) {
+    for (size_t i = 0; i < 10; i++)
+      for (size_t j = 0; j < 10; j++)
         lightingComponents.emplace_back(
             FloorComponent{glm::vec3{-0.9 + 0.2 * i, 0, -0.9 + 0.2 * j}});
+  }
 
-        lightingComponents.emplace_back(
+  void addCeiling() {
+    for (size_t i = 0; i < 10; i++)
+      for (size_t j = 0; j < 10; j++)
+        cellingComponents.emplace_back(
             FloorComponent{glm::vec3{-0.9 + 0.2 * i, 1.2, -0.9 + 0.2 * j}});
-      }
-    }
   }
 };
 
 export class SceneController {
 public:
-  void updateSceneData() {
+  void updateSceneData(const bool& isBirdView) {
+    data.isBirdView = isBirdView;
+
     degreeCycleCounter = std::fmodf(degreeCycleCounter + 1, 360.0f);
 
     data.spheres.at(0).position.x =
@@ -125,10 +138,11 @@ public:
 
 private:
   SceneData data{.spheres{{
-      SphereData{{-0.5, 0.05, -0.5}},
-      SphereData{{0.5, 0.05, 0.2}},
-      SphereData{{0.2, 0.05, 0.5}},
-  }}};
+                     SphereData{{-0.5, 0.05, -0.5}},
+                     SphereData{{0.5, 0.05, 0.2}},
+                     SphereData{{0.2, 0.05, 0.5}},
+                 }},
+                 .isBirdView{false}};
 
   float degreeCycleCounter{};
 };

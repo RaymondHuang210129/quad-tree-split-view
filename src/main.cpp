@@ -19,6 +19,7 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action,
 
 struct WindowUserData {
   std::vector<QuadTreeNode> quadTree;
+  bool isBirdView;
 };
 
 int main() {
@@ -47,39 +48,47 @@ int main() {
   SceneController sceneController{};
 
   WindowUserData userData{
-      .quadTree = {{.width = 1,
-                    .height = 1,
-                    .x = 0,
-                    .y = 0,
-                    .firstPersonController =
-                        FirstPersonController{window,
-                                              glm::vec3{0.0f, 0.2f, 0.8f}}}},
-  };
+      .quadTree{
+          {.width = 1,
+           .height = 1,
+           .x = 0,
+           .y = 0,
+           .firstPersonController =
+               FirstPersonController{window, glm::vec3{0.0f, 0.2f, 0.8f}}}},
+      .isBirdView{false}};
   glfwSetWindowUserPointer(window, &userData);
 
   glfwSetKeyCallback(window, keyCallback);
 
   while (!glfwWindowShouldClose(window)) {
-    sceneController.updateSceneData();
+    sceneController.updateSceneData(userData.isBirdView);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    for (auto& leaf : getQuadTreeLeaves(userData.quadTree)) {
-      leaf.firstPersonController.updateView();
+    int windowWidth{}, windowHeight{};
+    glfwGetWindowSize(window, &windowWidth, &windowHeight);
 
-      int windowWidth{}, windowHeight{};
-      glfwGetWindowSize(window, &windowWidth, &windowHeight);
+    if (userData.isBirdView) {
+      glViewport(0, 0, windowWidth, windowHeight);
+      scene.updateViewAspectRatio(viewAspectRatio(windowWidth, windowHeight));
+      scene.render(glm::lookAt({1.25, 4, 1.25}, glm::vec3{0}, {0, 1, 0}),
+                   sceneController.sceneData(), glm::vec3{1.5, 1.5, 1.5});
 
-      glViewport(static_cast<GLint>(windowWidth * leaf.x),
-                 static_cast<GLint>(windowHeight * leaf.y),
-                 static_cast<GLsizei>(windowWidth * leaf.width),
-                 static_cast<GLsizei>(windowHeight * leaf.height));
-      scene.updateViewAspectRatio(
-          viewAspectRatio(static_cast<int>(windowWidth * leaf.width),
-                          static_cast<int>(windowHeight * leaf.height)));
-      scene.render(leaf.firstPersonController.view(),
-                   sceneController.sceneData(),
-                   leaf.firstPersonController.position());
+    } else {
+      for (auto& leaf : getQuadTreeLeaves(userData.quadTree)) {
+        leaf.firstPersonController.updateView();
+
+        glViewport(static_cast<GLint>(leaf.x * windowWidth),
+                   static_cast<GLint>(leaf.y * windowHeight),
+                   static_cast<GLsizei>(leaf.width * windowWidth),
+                   static_cast<GLsizei>(leaf.height * windowHeight));
+        scene.updateViewAspectRatio(
+            viewAspectRatio(static_cast<int>(leaf.width * windowWidth),
+                            static_cast<int>(leaf.height * windowHeight)));
+        scene.render(leaf.firstPersonController.view(),
+                     sceneController.sceneData(),
+                     leaf.firstPersonController.position());
+      }
     }
 
     glfwSwapBuffers(window);
@@ -99,17 +108,19 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action,
   if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
     glfwSetWindowShouldClose(window, true);
 
+  WindowUserData* userData =
+      static_cast<WindowUserData*>(glfwGetWindowUserPointer(window));
+
   if (key == GLFW_KEY_UP && action == GLFW_PRESS) {
-    WindowUserData* userData =
-        static_cast<WindowUserData*>(glfwGetWindowUserPointer(window));
     growQuadTree(userData->quadTree, window);
     growQuadTree(userData->quadTree, window);
   }
 
   if (key == GLFW_KEY_DOWN && action == GLFW_PRESS) {
-    WindowUserData* userData =
-        static_cast<WindowUserData*>(glfwGetWindowUserPointer(window));
     shrinkQuadTree(userData->quadTree);
     shrinkQuadTree(userData->quadTree);
   }
+
+  if (key == GLFW_KEY_TAB && action == GLFW_PRESS)
+    userData->isBirdView = !userData->isBirdView;
 }
