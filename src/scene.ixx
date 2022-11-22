@@ -62,8 +62,8 @@ public:
   }
 
   void updateViewAspectRatio(const float& viewAspectRatio) {
-    proj = glm::mat4{glm::perspective(glm::radians(45.0f), viewAspectRatio,
-                                      0.0001f, 100.0f)};
+    proj = glm::mat4{
+        glm::perspective(glm::radians(45.0f), viewAspectRatio, 0.01f, 100.0f)};
   }
 
 private:
