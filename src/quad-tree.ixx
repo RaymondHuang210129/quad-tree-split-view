@@ -42,35 +42,32 @@ export void growQuadTree(std::vector<QuadTreeNode>& tree, GLFWwindow* window) {
   const auto newIdx = tree.size();
   const auto& parent = tree[getParentIdx(newIdx)];
 
-  if (getDepth(newIdx) % 2 != 0) {
-    if (newIdx % 2 != 0) {
+  if (getDepth(newIdx) % 2 != 0)
+    if (newIdx % 2 != 0)
       tree.push_back({.width = parent.width / 2,
                       .height = parent.height,
                       .x = parent.x,
                       .y = parent.y,
                       .firstPersonController = controller});
-    } else {
+    else
       tree.push_back({.width = parent.width / 2,
                       .height = parent.height,
                       .x = parent.x + parent.width / 2,
                       .y = parent.y,
                       .firstPersonController = controller});
-    }
-  } else {
-    if (newIdx % 2 != 0) {
-      tree.push_back({.width = parent.width,
-                      .height = parent.height / 2,
-                      .x = parent.x,
-                      .y = parent.y,
-                      .firstPersonController = controller});
-    } else {
-      tree.push_back({.width = parent.width,
-                      .height = parent.height / 2,
-                      .x = parent.x,
-                      .y = parent.y + parent.height / 2,
-                      .firstPersonController = controller});
-    }
-  }
+
+  else if (newIdx % 2 != 0)
+    tree.push_back({.width = parent.width,
+                    .height = parent.height / 2,
+                    .x = parent.x,
+                    .y = parent.y,
+                    .firstPersonController = controller});
+  else
+    tree.push_back({.width = parent.width,
+                    .height = parent.height / 2,
+                    .x = parent.x,
+                    .y = parent.y + parent.height / 2,
+                    .firstPersonController = controller});
 }
 
 const size_t getParentIdx(const size_t& idx) noexcept {
@@ -87,14 +84,8 @@ const glm::vec3 generateRandomPosition() noexcept {
   std::uniform_real_distribution<> locationDistribution(-0.9, 0.9);
   std::uniform_real_distribution<> heightDistribution(0.2, 0.9);
 
-  while (true) {
-    const glm::vec3 position{locationDistribution(engine),
-                             heightDistribution(engine),
-                             locationDistribution(engine)};
-
-    // Avoid from creating position near the wall in the room
-    if (position.x < 0.1 && -0.1 < position.z && position.z < 0.1) continue;
-
-    return position;
-  }
+  const glm::vec3 position{locationDistribution(engine),
+                           heightDistribution(engine),
+                           locationDistribution(engine)};
+  return position;
 }

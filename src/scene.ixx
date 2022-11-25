@@ -80,7 +80,7 @@ private:
   LightSourceComponent lightSource{glm::vec3{0.3f, 0.99f, 0.8f}};
 
   void addWalls() {
-    for (size_t i = 0; i < 3; i++) {
+    for (size_t i = 0; i < 3; i++)
       for (size_t j = 0; j < 10; j++) {
         lightingComponents.emplace_back(
             WallComponent{glm::vec3{-0.9 + 0.2 * j, 0.2 + i * 0.4, -1}, false});
@@ -91,12 +91,6 @@ private:
         lightingComponents.emplace_back(
             WallComponent{glm::vec3{1, 0.2 + i * 0.4, -0.9 + 0.2 * j}, true});
       }
-
-      for (size_t j = 0; j < 5; j++) {
-        lightingComponents.emplace_back(
-            WallComponent{glm::vec3{-0.9 + 0.2 * j, 0.2 + i * 0.4, 0}, false});
-      }
-    }
   }
 
   void addFloor() {
