@@ -47,11 +47,12 @@ private:
 
 export struct SphereData {
   glm::vec3 position;
+  glm::vec3 color;
 };
 
 export class SphereComponent {
 public:
-  SphereComponent(const glm::vec4& color) : _color(color) {
+  SphereComponent() {
     setUniformToProgram(shaderProgramProvider.program(), "lightAmbient",
                         glm::vec3{0.2f});
     setUniformToProgram(shaderProgramProvider.program(), "lightDiffuse",
@@ -75,7 +76,8 @@ public:
     setUniformToProgram(shaderProgramProvider.program(), "model", model);
     setUniformToProgram(shaderProgramProvider.program(), "view", view);
     setUniformToProgram(shaderProgramProvider.program(), "proj", proj);
-    setUniformToProgram(shaderProgramProvider.program(), "color", _color);
+    setUniformToProgram(shaderProgramProvider.program(), "color",
+                        glm::vec4{data.color, 1.0f});
     setUniformToProgram(shaderProgramProvider.program(), "viewPosition",
                         viewPosition);
     setUniformToProgram(shaderProgramProvider.program(), "lightPosition",
@@ -89,8 +91,6 @@ private:
   static inline const SphereLightingShaderProgramProvider
       shaderProgramProvider{};
   static inline const SphereVaoProvider vaoProvider{};
-
-  const glm::vec4 _color{1.0f};
 };
 
 const std::vector<glm::vec3>

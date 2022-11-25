@@ -1,6 +1,6 @@
 module;
 
-#include <array>
+#include <random>
 #include <variant>
 #include <vector>
 
@@ -19,8 +19,17 @@ using StaticComponent =
     std::variant<AxesComponent, GridComponent, LightSourceComponent>;
 using LighingComponent = std::variant<FloorComponent, WallComponent>;
 
+struct AnimatedSphereData {
+  glm::vec3 originalPosition;
+  glm::vec3 movingScale;
+  float cycleOffset;
+  SphereData sphereData;
+};
+
+AnimatedSphereData generateRandomAnimatedSphereData() noexcept;
+
 export struct SceneData {
-  std::array<SphereData, 3> spheres;
+  std::vector<AnimatedSphereData> spheres;
   bool isBirdView;
 };
 
@@ -33,8 +42,8 @@ public:
     addCeiling();
   }
 
-  void render(const glm::mat4& view, const SceneData& data,
-              const glm::vec3& viewPosition) const {
+  void render(const glm::mat4& view, const glm::vec3& viewPosition,
+              const SceneData& data) const {
     for (const auto& component : staticComponents)
       std::visit([&](const auto& c) { c.render(view, proj); }, component);
 
@@ -47,18 +56,12 @@ public:
 
     lightSource.render(view, proj);
 
-    for (size_t i = 0; const auto& sphereComponent : sphereComponents) {
-      sphereComponent.render(view, proj, data.spheres.at(i), viewPosition,
-                             lightSource.position());
-      i++;
-    }
+    renderSpheres(view, viewPosition, data.spheres);
 
-    if (!data.isBirdView) {
-      for (const auto& cellingComponent : cellingComponents) {
+    if (!data.isBirdView)
+      for (const auto& cellingComponent : cellingComponents)
         cellingComponent.render(view, proj, viewPosition,
                                 lightSource.position());
-      }
-    }
   }
 
   void updateViewAspectRatio(const float& viewAspectRatio) {
@@ -72,11 +75,7 @@ private:
                                                 GridComponent{}};
   std::vector<LighingComponent> lightingComponents{};
   std::vector<FloorComponent> cellingComponents{};
-  std::vector<SphereComponent> sphereComponents{
-      SphereComponent{glm::vec4{0.5, 0.3, 0.7, 1.0}},
-      SphereComponent{glm::vec4{0.7, 0.3, 0.3, 1.0}},
-      SphereComponent{glm::vec4{0.5, 0.7, 0.4, 1.0}},
-  };
+  mutable std::vector<SphereComponent> sphereComponents{};
   LightSourceComponent lightSource{glm::vec3{0.3f, 0.99f, 0.8f}};
 
   void addWalls() {
@@ -106,37 +105,91 @@ private:
         cellingComponents.emplace_back(
             FloorComponent{glm::vec3{-0.9 + 0.2 * i, 1.2, -0.9 + 0.2 * j}});
   }
+
+  void renderSpheres(const glm::mat4& view, const glm::vec3& viewPosition,
+                     const std::vector<AnimatedSphereData>& data) const {
+    for (size_t i = 0; i < data.size(); i++) {
+      if (sphereComponents.size() <= i)
+        sphereComponents.push_back(SphereComponent{});
+
+      sphereComponents.at(i).render(view, proj, data.at(i).sphereData,
+                                    viewPosition, lightSource.position());
+    }
+  }
 };
 
 export class SceneController {
 public:
+  SceneController() {
+    const auto numSpheres{100};
+    for (size_t i = 0; i < numSpheres; i++)
+      data.spheres.push_back(generateRandomAnimatedSphereData());
+  }
+
   void updateSceneData(const bool& isBirdView) {
     data.isBirdView = isBirdView;
 
-    degreeCycleCounter = std::fmodf(degreeCycleCounter + 1, 360.0f);
+    degreeCycleCounter = std::fmodf(degreeCycleCounter + 0.5f, 360.0f);
 
-    data.spheres.at(0).position.x =
-        data.spheres.at(0).position.x +
-        std::sin(glm::radians(degreeCycleCounter)) / 200;
+    for (auto& sphere : data.spheres) {
+      sphere.sphereData.position.x =
+          sphere.originalPosition.x +
+          glm::sin(glm::radians(degreeCycleCounter + sphere.cycleOffset)) *
+              sphere.movingScale.x;
 
-    data.spheres.at(1).position.z =
-        data.spheres.at(1).position.z +
-        std::cos(glm::radians(degreeCycleCounter)) / 160;
-
-    data.spheres.at(2).position.x =
-        data.spheres.at(2).position.x +
-        std::cos(glm::radians(degreeCycleCounter) + 1.2f) / 160;
+      sphere.sphereData.position.z =
+          sphere.originalPosition.z +
+          glm::cos(glm::radians(degreeCycleCounter + sphere.cycleOffset)) *
+              sphere.movingScale.z;
+    }
   }
 
   const SceneData& sceneData() const { return data; }
 
 private:
-  SceneData data{.spheres{{
-                     SphereData{{-0.5, 0.05, -0.5}},
-                     SphereData{{0.5, 0.05, 0.2}},
-                     SphereData{{0.2, 0.05, 0.5}},
-                 }},
-                 .isBirdView{false}};
+  SceneData data{.isBirdView{false}};
 
   float degreeCycleCounter{};
 };
+
+AnimatedSphereData generateRandomAnimatedSphereData() noexcept {
+  std::random_device rd;
+  std::mt19937 engine(rd());
+
+  std::uniform_real_distribution<> positionDistribution(-0.75, 0.75);
+  glm::vec3 position{
+      positionDistribution(engine),
+      0.05,
+      positionDistribution(engine),
+  };
+
+  std::uniform_real_distribution<> movingScaleXDistribution(
+      0.05, 0.9 - std::abs(position.x));
+  std::uniform_real_distribution<> movingScaleYDistribution(
+      0.05, 0.9 - std::abs(position.y));
+  std::uniform_real_distribution<> movingScaleZDistribution(
+      0.05, 0.9 - std::abs(position.z));
+  glm::vec3 movingScale{
+      movingScaleXDistribution(engine),
+      0,
+      movingScaleZDistribution(engine),
+  };
+
+  std::uniform_real_distribution<float> cycleOffsetDistribution(0, 360);
+  float cycleOffset{cycleOffsetDistribution(engine)};
+
+  std::uniform_real_distribution colorDistribution(0.4, 0.95);
+  glm::vec3 color{
+      colorDistribution(engine),
+      colorDistribution(engine),
+      colorDistribution(engine),
+  };
+
+  return {.originalPosition{position},
+          .movingScale{movingScale},
+          .cycleOffset{cycleOffset},
+          .sphereData{
+              .position{position},
+              .color{color},
+          }};
+}

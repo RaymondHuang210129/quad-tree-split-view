@@ -72,7 +72,7 @@ int main() {
       glViewport(0, 0, windowWidth, windowHeight);
       scene.updateViewAspectRatio(viewAspectRatio(windowWidth, windowHeight));
       scene.render(glm::lookAt({1.25, 4, 1.25}, glm::vec3{0}, {0, 1, 0}),
-                   sceneController.sceneData(), glm::vec3{1.5, 1.5, 1.5});
+                   glm::vec3{1.5, 1.5, 1.5}, sceneController.sceneData());
 
     } else {
       for (auto& leaf : getQuadTreeLeaves(userData.quadTree)) {
@@ -86,8 +86,8 @@ int main() {
             viewAspectRatio(static_cast<int>(leaf.width * windowWidth),
                             static_cast<int>(leaf.height * windowHeight)));
         scene.render(leaf.firstPersonController.view(),
-                     sceneController.sceneData(),
-                     leaf.firstPersonController.position());
+                     leaf.firstPersonController.position(),
+                     sceneController.sceneData());
       }
     }
 
