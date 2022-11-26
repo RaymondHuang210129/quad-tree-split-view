@@ -16,9 +16,13 @@ public:
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   }
 
-  const glm::mat4& view() { return _view; }
+  const glm::mat4& view() const { return _view; }
 
-  const glm::vec3& position() { return _position; }
+  const glm::vec3& position() const { return _position; }
+
+  const double horizontalAngleRadians() { return _horizontalAngleRadians; }
+
+  const double verticalAngleRadians() { return _verticalAngleRadians; }
 
   void updateView() {
     double xPos{}, yPos{};
@@ -31,22 +35,22 @@ public:
 
     float mouseSpeed{0.005f};
 
-    horizontalAngleRadians += mouseSpeed * xDelta;
-    verticalAngleRadians += mouseSpeed * yDelta;
+    _horizontalAngleRadians = mouseSpeed * xDelta;
+    _verticalAngleRadians = mouseSpeed * yDelta;
 
-    if (verticalAngleRadians >= (80.0 * M_PI / 180.0))
-      verticalAngleRadians = 80.0 * M_PI / 180.0;
-    if (verticalAngleRadians <= (-70.0 * M_PI / 180.0))
-      verticalAngleRadians = -70.0 * M_PI / 180.0;
+    if (_verticalAngleRadians >= (80.0 * M_PI / 180.0))
+      _verticalAngleRadians = 80.0 * M_PI / 180.0;
+    if (_verticalAngleRadians <= (-70.0 * M_PI / 180.0))
+      _verticalAngleRadians = -70.0 * M_PI / 180.0;
 
     const glm::vec3 direction{
-        std::cos(verticalAngleRadians) * std::sin(horizontalAngleRadians),
-        std::sin(verticalAngleRadians),
-        std::cos(verticalAngleRadians) * std::cos(horizontalAngleRadians)};
+        std::cos(_verticalAngleRadians) * std::sin(_horizontalAngleRadians),
+        std::sin(_verticalAngleRadians),
+        std::cos(_verticalAngleRadians) * std::cos(_horizontalAngleRadians)};
 
     const glm::vec3 right{
-        glm::vec3{std::sin(horizontalAngleRadians - 3.14f / 2.0f), 0.0f,
-                  std::cos(horizontalAngleRadians - 3.14f / 2.0f)}};
+        glm::vec3{std::sin(_horizontalAngleRadians - 3.14f / 2.0f), 0.0f,
+                  std::cos(_horizontalAngleRadians - 3.14f / 2.0f)}};
 
     const glm::vec3 up{glm::cross(right, direction)};
 
@@ -57,6 +61,6 @@ private:
   GLFWwindow* window{};
   glm::mat4 _view{};
   glm::vec3 _position{};
-  double horizontalAngleRadians{};
-  double verticalAngleRadians{};
+  double _horizontalAngleRadians{};
+  double _verticalAngleRadians{};
 };

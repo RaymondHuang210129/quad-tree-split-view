@@ -123,7 +123,7 @@ public:
   }
 
 private:
-  static inline const LightingShaderProgramProvider shaderProgramProvider{};
+  static inline const TextureLightingShaderProgramProvider shaderProgramProvider{};
   static inline const FloorVaoProvider vaoProvider{};
   static inline const TextureProvider textureProvider{
       std::string("textures/tile2.jpeg")};

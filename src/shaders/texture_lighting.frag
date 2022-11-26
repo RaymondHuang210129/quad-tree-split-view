@@ -1,10 +1,11 @@
 #version 330 core
 
+in vec2 textureCoord;
 in vec3 fragmentNormal;
 in vec3 fragmentPosition;
 out vec4 oColor;
 
-uniform vec4 color;
+uniform sampler2D tex;
 
 uniform vec3 viewPosition;
 uniform vec3 lightPosition;
@@ -18,22 +19,22 @@ vec3 calcPointLight(vec3 normal, vec3 viewDirection);
 void main() {
   vec3 normal = normalize(fragmentNormal);
   vec3 viewDirection = normalize(viewPosition - fragmentPosition);
-  oColor = vec4(calcPointLight(normal, viewDirection), color.a);
+  oColor = vec4(calcPointLight(normal, viewDirection), 1.0);
 }
 
 vec3 calcPointLight(vec3 normal, vec3 viewDirection) {
   // diffuse
   vec3 lightDirection = normalize(lightPosition - fragmentPosition);
   float normalDifference = max(dot(normal, lightDirection), 0.0);
-  vec3 diffuse = vec3(color) * normalDifference * lightDiffuse;
+  vec3 diffuse = vec3(texture(tex, textureCoord)) * normalDifference * lightDiffuse;
 
   // specular
   vec3 reflectDireciton = reflect(-lightDirection, normal);
   float shininess = pow(max(dot(viewDirection, reflectDireciton), 0.0), 20);
-  vec3 specular = vec3(color) * shininess * lightSpecular;
+  vec3 specular = vec3(texture(tex, textureCoord)) * shininess * lightSpecular;
 
   // ambient
-  vec3 ambient = vec3(color) * lightAmbient;
+  vec3 ambient = vec3(texture(tex, textureCoord)) * lightAmbient;
 
   vec3 positionDifference = lightPosition - fragmentPosition;
   float distance = length(positionDifference);

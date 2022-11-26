@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <array>
 #include <iostream>
 #include <random>
@@ -18,7 +19,7 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action,
                  int mods) noexcept;
 
 struct WindowUserData {
-  std::vector<QuadTreeNode> quadTree;
+  std::vector<std::shared_ptr<QuadTreeNode>> quadTree;
   bool isBirdView;
 };
 
@@ -44,18 +45,16 @@ int main() {
   glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
   glEnable(GL_DEPTH_TEST);
 
-  Scene scene{viewAspectRatio(defaultWidth, defaultHeight)};
   SceneController sceneController{};
 
-  WindowUserData userData{
-      .quadTree{
-          {.width = 1,
-           .height = 1,
-           .x = 0,
-           .y = 0,
-           .firstPersonController =
-               FirstPersonController{window, glm::vec3{0.0f, 0.2f, 0.8f}}}},
-      .isBirdView{false}};
+  WindowUserData userData{.quadTree{std::make_shared<QuadTreeNode>(
+                              1.0f, 1.0f, 0.0f, 0.0f,
+                              std::make_shared<FirstPersonController>(
+                                  window, glm::vec3{0.0f, 0.2f, 0.8f}))},
+                          .isBirdView{false}};
+
+  Scene scene{viewAspectRatio(defaultWidth, defaultHeight)};
+
   glfwSetWindowUserPointer(window, &userData);
 
   glfwSetKeyCallback(window, keyCallback);
@@ -72,22 +71,24 @@ int main() {
       glViewport(0, 0, windowWidth, windowHeight);
       scene.updateViewAspectRatio(viewAspectRatio(windowWidth, windowHeight));
       scene.render(glm::lookAt({1.25, 4, 1.25}, glm::vec3{0}, {0, 1, 0}),
-                   glm::vec3{1.5, 1.5, 1.5}, sceneController.sceneData());
+                   sceneController.sceneData(), glm::vec3{1.5, 1.5, 1.5},
+                   getQuadTreeLeaves(userData.quadTree));
 
     } else {
       for (auto& leaf : getQuadTreeLeaves(userData.quadTree)) {
-        leaf.firstPersonController.updateView();
+        leaf->firstPersonController->updateView();
 
-        glViewport(static_cast<GLint>(leaf.x * windowWidth),
-                   static_cast<GLint>(leaf.y * windowHeight),
-                   static_cast<GLsizei>(leaf.width * windowWidth),
-                   static_cast<GLsizei>(leaf.height * windowHeight));
+        glViewport(static_cast<GLint>(leaf->x * windowWidth),
+                   static_cast<GLint>(leaf->y * windowHeight),
+                   static_cast<GLsizei>(leaf->width * windowWidth),
+                   static_cast<GLsizei>(leaf->height * windowHeight));
         scene.updateViewAspectRatio(
-            viewAspectRatio(static_cast<int>(leaf.width * windowWidth),
-                            static_cast<int>(leaf.height * windowHeight)));
-        scene.render(leaf.firstPersonController.view(),
-                     leaf.firstPersonController.position(),
-                     sceneController.sceneData());
+            viewAspectRatio(static_cast<int>(leaf->width * windowWidth),
+                            static_cast<int>(leaf->height * windowHeight)));
+        scene.render(leaf->firstPersonController->view(),
+                     sceneController.sceneData(),
+                     leaf->firstPersonController->position(),
+                     getQuadTreeLeaves(userData.quadTree));
       }
     }
 
@@ -112,8 +113,8 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action,
       static_cast<WindowUserData*>(glfwGetWindowUserPointer(window));
 
   if (key == GLFW_KEY_UP && action == GLFW_PRESS) {
-    growQuadTree(userData->quadTree, window);
-    growQuadTree(userData->quadTree, window);
+    growQuadTree(userData->quadTree, window, true);
+    growQuadTree(userData->quadTree, window, false);
   }
 
   if (key == GLFW_KEY_DOWN && action == GLFW_PRESS) {

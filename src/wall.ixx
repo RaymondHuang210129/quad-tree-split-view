@@ -51,14 +51,14 @@ public:
          {{0.5, -0.5, -0.5}, {1.0, 1.0}, {0.0, -1.0, 0.0}},
          {{0.5, -0.5, 0.5}, {1.0, 0.0}, {0.0, -1.0, 0.0}}, // left y plane
 
-         {{0.5, 0.5, -0.5}, {0.0, 0.0}, {1.0, 0.0, 0.0}},
+         {{0.5, -0.5, -0.5}, {0.0, 0.0}, {1.0, 0.0, 0.0}},
          {{0.5, -0.5, 0.5}, {0.0, 1.0}, {1.0, 0.0, 0.0}},
-         {{0.5, 0.5, -0.5}, {1.0, 1.0}, {1.0, 0.0, 0.0}},
-         {{0.5, -0.5, 0.5}, {1.0, 0.0}, {1.0, 0.0, 0.0}}, // front x plane
+         {{0.5, 0.5, 0.5}, {1.0, 1.0}, {1.0, 0.0, 0.0}},
+         {{0.5, 0.5, -0.5}, {1.0, 0.0}, {1.0, 0.0, 0.0}}, // front x plane
 
-         {{-0.5, 0.5, -0.5}, {0.0, 0.0}, {-1.0, 0.0, 0.0}},
-         {{-0.5, -0.5, 0.5}, {0.0, 1.0}, {-1.0, 0.0, 0.0}},
-         {{-0.5, 0.5, -0.5}, {1.0, 1.0}, {-1.0, 0.0, 0.0}},
+         {{-0.5, -0.5, -0.5}, {0.0, 0.0}, {-1.0, 0.0, 0.0}},
+         {{-0.5, 0.5, -0.5}, {0.0, 1.0}, {-1.0, 0.0, 0.0}},
+         {{-0.5, 0.5, 0.5}, {1.0, 1.0}, {-1.0, 0.0, 0.0}},
          {{-0.5, -0.5, 0.5}, {1.0, 0.0}, {-1.0, 0.0, 0.0}}}}; // back x plane
 
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(vertexAttributes),
@@ -126,7 +126,8 @@ public:
   }
 
 private:
-  static inline const LightingShaderProgramProvider shaderProgramProvider{};
+  static inline const TextureLightingShaderProgramProvider
+      shaderProgramProvider{};
   static inline const WallVaoProvider vaoProvider{};
   static inline const TextureProvider textureProvider{
       std::string("textures/tile1.jpeg")};

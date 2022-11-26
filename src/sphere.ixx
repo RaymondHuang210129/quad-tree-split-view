@@ -36,8 +36,11 @@ public:
                  vertices.data(), GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
                           static_cast<void*>(0));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
+                          static_cast<void*>(0));
 
     glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
     return _vao;
   }
 
@@ -88,8 +91,7 @@ public:
   }
 
 private:
-  static inline const SphereLightingShaderProgramProvider
-      shaderProgramProvider{};
+  static inline const LightingShaderProgramProvider shaderProgramProvider{};
   static inline const SphereVaoProvider vaoProvider{};
 };
 

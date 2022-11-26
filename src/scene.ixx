@@ -1,5 +1,6 @@
 module;
 
+#include <array>
 #include <random>
 #include <variant>
 #include <vector>
@@ -14,6 +15,9 @@ import wall;
 import floor;
 import sphere;
 import light_source;
+import quad_tree;
+import camera;
+import user_control;
 
 using StaticComponent =
     std::variant<AxesComponent, GridComponent, LightSourceComponent>;
@@ -42,8 +46,9 @@ public:
     addCeiling();
   }
 
-  void render(const glm::mat4& view, const glm::vec3& viewPosition,
-              const SceneData& data) const {
+  void render(const glm::mat4& view, const SceneData& data,
+              const glm::vec3& viewPosition,
+              std::vector<std::shared_ptr<QuadTreeNode>> treeLeafs) const {
     for (const auto& component : staticComponents)
       std::visit([&](const auto& c) { c.render(view, proj); }, component);
 
@@ -62,6 +67,18 @@ public:
       for (const auto& cellingComponent : cellingComponents)
         cellingComponent.render(view, proj, viewPosition,
                                 lightSource.position());
+
+    if (data.isBirdView) {
+      for (auto& treeLeaf : treeLeafs) {
+        CameraComponent cameraComponent(
+            treeLeaf->firstPersonController->position());
+        cameraComponent.render(
+            view, proj,
+            treeLeaf->firstPersonController->horizontalAngleRadians(),
+            treeLeaf->firstPersonController->verticalAngleRadians(),
+            viewPosition, lightSource.position());
+      }
+    }
   }
 
   void updateViewAspectRatio(const float& viewAspectRatio) {
