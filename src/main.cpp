@@ -9,10 +9,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/matrix.hpp>
 
-import raii_glfw;
-import scene;
-import user_control;
-import quad_tree;
+#include "quad_tree.h"
+#include "raii_glfw.h"
+#include "scene.h"
+#include "user_control.h"
 
 const float viewAspectRatio(const int& width, const int& height);
 void keyCallback(GLFWwindow* window, int key, int scancode, int action,
