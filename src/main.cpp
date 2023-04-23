@@ -29,8 +29,8 @@ int main() {
   const int defaultWidth{720};
   const int defaultHeight{720};
 
-  GLFWwindow* window = glfwCreateWindow(defaultWidth, defaultHeight,
-                                        "Mini Portal", nullptr, nullptr);
+  GLFWwindow* window = glfwCreateWindow(
+      defaultWidth, defaultHeight, "Quad Tree Split Views", nullptr, nullptr);
   if (window == NULL) {
     std::cout << "Failed to create GLFW window" << std::endl;
     return -1;
