@@ -1,24 +1,25 @@
 #include "light_source.h"
 
 const GLuint& LightSourceVaoProvider::vao() const {
-  if (glIsVertexArray(_vao) == GL_TRUE) return _vao;
+  static auto _ = std::invoke([this] {
+    glGenVertexArrays(1, &_vao);
+    glBindVertexArray(_vao);
 
-  glGenVertexArrays(1, &_vao);
-  glBindVertexArray(_vao);
+    GLuint vbo{};
+    glGenBuffers(1, &vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
-  GLuint vbo{};
-  glGenBuffers(1, &vbo);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3),
+                 vertices.data(), GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
+                          static_cast<void*>(0));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
+                          static_cast<void*>(0));
 
-  glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3),
-               vertices.data(), GL_STATIC_DRAW);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
-                        static_cast<void*>(0));
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
-                        static_cast<void*>(0));
-
-  glEnableVertexAttribArray(0);
-  glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    return 0;
+  });
   return _vao;
 }
 
