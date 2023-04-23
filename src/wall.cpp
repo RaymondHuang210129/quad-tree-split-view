@@ -1,69 +1,71 @@
 #include "wall.h"
 
 const GLuint& WallVaoProvider::vao() const {
-  if (glIsVertexArray(_vao) == GL_TRUE) return _vao;
 
-  glGenVertexArrays(1, &_vao);
-  glBindVertexArray(_vao);
+  static auto _ = std::invoke([this] {
+    glGenVertexArrays(1, &_vao);
+    glBindVertexArray(_vao);
 
-  GLuint vbo{};
-  glGenBuffers(1, &vbo);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    GLuint vbo{};
+    glGenBuffers(1, &vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
-  typedef struct {
-    glm::vec3 position;
-    glm::vec2 textureCoordinate;
-    glm::vec3 normal;
-  } vertexAttributes;
+    typedef struct {
+      glm::vec3 position;
+      glm::vec2 textureCoordinate;
+      glm::vec3 normal;
+    } vertexAttributes;
 
-  std::array<vertexAttributes, 24> vertices{
-      {{{-0.5, -0.5, 0.5}, {0.0, 0.0}, {0.0, 0.0, 1.0}},
-       {{-0.5, 0.5, 0.5}, {0.0, 1.0}, {0.0, 0.0, 1.0}},
-       {{0.5, 0.5, 0.5}, {1.0, 1.0}, {0.0, 0.0, 1.0}},
-       {{0.5, -0.5, 0.5}, {1.0, 0.0}, {0.0, 0.0, 1.0}}, // upper z plane
+    std::array<vertexAttributes, 24> vertices{
+        {{{-0.5, -0.5, 0.5}, {0.0, 0.0}, {0.0, 0.0, 1.0}},
+         {{-0.5, 0.5, 0.5}, {0.0, 1.0}, {0.0, 0.0, 1.0}},
+         {{0.5, 0.5, 0.5}, {1.0, 1.0}, {0.0, 0.0, 1.0}},
+         {{0.5, -0.5, 0.5}, {1.0, 0.0}, {0.0, 0.0, 1.0}}, // upper z plane
 
-       {{-0.5, -0.5, -0.5}, {0.0, 0.0}, {0.0, 0.0, -1.0}},
-       {{-0.5, 0.5, -0.5}, {0.0, 1.0}, {0.0, 0.0, -1.0}},
-       {{0.5, 0.5, -0.5}, {1.0, 1.0}, {0.0, 0.0, -1.0}},
-       {{0.5, -0.5, -0.5}, {1.0, 0.0}, {0.0, 0.0, -1.0}}, // lower z plane
+         {{-0.5, -0.5, -0.5}, {0.0, 0.0}, {0.0, 0.0, -1.0}},
+         {{-0.5, 0.5, -0.5}, {0.0, 1.0}, {0.0, 0.0, -1.0}},
+         {{0.5, 0.5, -0.5}, {1.0, 1.0}, {0.0, 0.0, -1.0}},
+         {{0.5, -0.5, -0.5}, {1.0, 0.0}, {0.0, 0.0, -1.0}}, // lower z plane
 
-       {{0.5, 0.5, -0.5}, {0.0, 0.0}, {0.0, 1.0, 0.0}},
-       {{-0.5, 0.5, -0.5}, {0.0, 1.0}, {0.0, 1.0, 0.0}},
-       {{-0.5, 0.5, 0.5}, {1.0, 1.0}, {0.0, 1.0, 0.0}},
-       {{0.5, 0.5, 0.5}, {1.0, 0.0}, {0.0, 1.0, 0.0}}, // right y plane
+         {{0.5, 0.5, -0.5}, {0.0, 0.0}, {0.0, 1.0, 0.0}},
+         {{-0.5, 0.5, -0.5}, {0.0, 1.0}, {0.0, 1.0, 0.0}},
+         {{-0.5, 0.5, 0.5}, {1.0, 1.0}, {0.0, 1.0, 0.0}},
+         {{0.5, 0.5, 0.5}, {1.0, 0.0}, {0.0, 1.0, 0.0}}, // right y plane
 
-       {{-0.5, -0.5, 0.5}, {0.0, 0.0}, {0.0, -1.0, 0.0}},
-       {{-0.5, -0.5, -0.5}, {0.0, 1.0}, {0.0, -1.0, 0.0}},
-       {{0.5, -0.5, -0.5}, {1.0, 1.0}, {0.0, -1.0, 0.0}},
-       {{0.5, -0.5, 0.5}, {1.0, 0.0}, {0.0, -1.0, 0.0}}, // left y plane
+         {{-0.5, -0.5, 0.5}, {0.0, 0.0}, {0.0, -1.0, 0.0}},
+         {{-0.5, -0.5, -0.5}, {0.0, 1.0}, {0.0, -1.0, 0.0}},
+         {{0.5, -0.5, -0.5}, {1.0, 1.0}, {0.0, -1.0, 0.0}},
+         {{0.5, -0.5, 0.5}, {1.0, 0.0}, {0.0, -1.0, 0.0}}, // left y plane
 
-       {{0.5, -0.5, -0.5}, {0.0, 0.0}, {1.0, 0.0, 0.0}},
-       {{0.5, -0.5, 0.5}, {0.0, 1.0}, {1.0, 0.0, 0.0}},
-       {{0.5, 0.5, 0.5}, {1.0, 1.0}, {1.0, 0.0, 0.0}},
-       {{0.5, 0.5, -0.5}, {1.0, 0.0}, {1.0, 0.0, 0.0}}, // front x plane
+         {{0.5, -0.5, -0.5}, {0.0, 0.0}, {1.0, 0.0, 0.0}},
+         {{0.5, -0.5, 0.5}, {0.0, 1.0}, {1.0, 0.0, 0.0}},
+         {{0.5, 0.5, 0.5}, {1.0, 1.0}, {1.0, 0.0, 0.0}},
+         {{0.5, 0.5, -0.5}, {1.0, 0.0}, {1.0, 0.0, 0.0}}, // front x plane
 
-       {{-0.5, -0.5, -0.5}, {0.0, 0.0}, {-1.0, 0.0, 0.0}},
-       {{-0.5, 0.5, -0.5}, {0.0, 1.0}, {-1.0, 0.0, 0.0}},
-       {{-0.5, 0.5, 0.5}, {1.0, 1.0}, {-1.0, 0.0, 0.0}},
-       {{-0.5, -0.5, 0.5}, {1.0, 0.0}, {-1.0, 0.0, 0.0}}}}; // back x plane
+         {{-0.5, -0.5, -0.5}, {0.0, 0.0}, {-1.0, 0.0, 0.0}},
+         {{-0.5, 0.5, -0.5}, {0.0, 1.0}, {-1.0, 0.0, 0.0}},
+         {{-0.5, 0.5, 0.5}, {1.0, 1.0}, {-1.0, 0.0, 0.0}},
+         {{-0.5, -0.5, 0.5}, {1.0, 0.0}, {-1.0, 0.0, 0.0}}}}; // back x plane
 
-  glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(vertexAttributes),
-               vertices.data(), GL_STATIC_DRAW);
-  glVertexAttribPointer(0, sizeof(vertexAttributes::position) / sizeof(GLfloat),
-                        GL_FLOAT, GL_FALSE, sizeof(vertexAttributes),
-                        (GLvoid*)offsetof(vertexAttributes, position));
-  glVertexAttribPointer(
-      1, sizeof(vertexAttributes::textureCoordinate) / sizeof(GLfloat),
-      GL_FLOAT, GL_FALSE, sizeof(vertexAttributes),
-      (GLvoid*)offsetof(vertexAttributes, textureCoordinate));
-  glVertexAttribPointer(2, sizeof(vertexAttributes::normal) / sizeof(GLfloat),
-                        GL_FLOAT, GL_FALSE, sizeof(vertexAttributes),
-                        (GLvoid*)offsetof(vertexAttributes, normal));
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(vertexAttributes),
+                 vertices.data(), GL_STATIC_DRAW);
+    glVertexAttribPointer(0,
+                          sizeof(vertexAttributes::position) / sizeof(GLfloat),
+                          GL_FLOAT, GL_FALSE, sizeof(vertexAttributes),
+                          (GLvoid*)offsetof(vertexAttributes, position));
+    glVertexAttribPointer(
+        1, sizeof(vertexAttributes::textureCoordinate) / sizeof(GLfloat),
+        GL_FLOAT, GL_FALSE, sizeof(vertexAttributes),
+        (GLvoid*)offsetof(vertexAttributes, textureCoordinate));
+    glVertexAttribPointer(2, sizeof(vertexAttributes::normal) / sizeof(GLfloat),
+                          GL_FLOAT, GL_FALSE, sizeof(vertexAttributes),
+                          (GLvoid*)offsetof(vertexAttributes, normal));
 
-  glEnableVertexAttribArray(0);
-  glEnableVertexAttribArray(1);
-  glEnableVertexAttribArray(2);
-
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
+    return 0;
+  });
   return _vao;
 }
 
