@@ -25,6 +25,7 @@ struct AnimatedSphereData {
   glm::vec3 movingScale;
   float cycleOffset;
   SphereData sphereData;
+  float speed;
 };
 
 struct SceneData {
@@ -59,7 +60,7 @@ private:
 class SceneController {
 public:
   SceneController();
-  void updateSceneData(const bool& isBirdView);
+  void updateSceneData(const bool& isBirdView, double currentTimestamp);
   const SceneData& sceneData() const;
 
 private:

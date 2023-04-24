@@ -1,11 +1,11 @@
 #include "fps_counter.h"
 
-FpsCounter::FpsCounter(GLFWwindow* window, const char* title)
-    : referenceTimestamp(glfwGetTime()), window(window),
+FpsCounter::FpsCounter(GLFWwindow* window, const char* title,
+                       double initTimestamp)
+    : referenceTimestamp(initTimestamp), window(window),
       title(std::string{title}) {}
 
-void FpsCounter::updateFramerate() {
-  double currentTimestamp = glfwGetTime();
+void FpsCounter::updateFramerate(double currentTimestamp) {
   if (double delta = currentTimestamp - referenceTimestamp; delta < 1.0)
       [[likely]] {
     frameCount++;

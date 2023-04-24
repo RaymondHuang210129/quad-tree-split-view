@@ -22,6 +22,7 @@
     <ClCompile Include="src\camera.cpp" />
     <ClCompile Include="src\floor.cpp" />
     <ClCompile Include="src\fps_counter.cpp" />
+    <ClCompile Include="src\global_timer.cpp" />
     <ClCompile Include="src\grid.cpp" />
     <ClCompile Include="src\axes.cpp" />
     <ClCompile Include="src\light_source.cpp" />
@@ -54,6 +55,7 @@
     <ClInclude Include="src\camera.h" />
     <ClInclude Include="src\floor.h" />
     <ClInclude Include="src\fps_counter.h" />
+    <ClInclude Include="src\global_timer.h" />
     <ClInclude Include="src\grid.h" />
     <ClInclude Include="src\light_source.h" />
     <ClInclude Include="src\quad_tree.h" />
