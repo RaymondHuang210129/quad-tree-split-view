@@ -65,6 +65,9 @@
     <ClCompile Include="src\user_control.cpp">
       <Filter>Source Files\utilities</Filter>
     </ClCompile>
+    <ClCompile Include="src\global_timer.cpp">
+      <Filter>Source Files\utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shaders\basic.frag">
@@ -141,6 +144,9 @@
       <Filter>Source Files\utilities</Filter>
     </ClInclude>
     <ClInclude Include="src\user_control.h">
+      <Filter>Source Files\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\global_timer.h">
       <Filter>Source Files\utilities</Filter>
     </ClInclude>
   </ItemGroup>

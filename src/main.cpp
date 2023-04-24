@@ -10,6 +10,7 @@
 #include <glm/matrix.hpp>
 
 #include "fps_counter.h"
+#include "global_timer.h"
 #include "quad_tree.h"
 #include "raii_glfw.h"
 #include "scene.h"
@@ -61,13 +62,18 @@ int main() {
 
   glfwSetKeyCallback(window, keyCallback);
 
-  FpsCounter fpsCounter{window, windowTitle};
+  GlobalTimer globalTimer{};
+
+  FpsCounter fpsCounter{window, windowTitle, globalTimer.getCurrentTime()};
 
   while (!glfwWindowShouldClose(window)) {
 
-    fpsCounter.updateFramerate();
+    globalTimer.updateTime();
 
-    sceneController.updateSceneData(userData.isBirdView);
+    fpsCounter.updateFramerate(globalTimer.getCurrentTime());
+
+    sceneController.updateSceneData(userData.isBirdView,
+                                    globalTimer.getCurrentTime());
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

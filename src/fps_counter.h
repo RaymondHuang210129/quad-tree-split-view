@@ -5,8 +5,8 @@
 
 class FpsCounter {
 public:
-  FpsCounter(GLFWwindow* window, const char* title);
-  void updateFramerate();
+  FpsCounter(GLFWwindow* window, const char* title, double initTimestamp);
+  void updateFramerate(double currentTimestamp);
 
 private:
   GLFWwindow* window{};

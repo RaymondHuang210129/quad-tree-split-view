@@ -43,8 +43,10 @@ void Scene::render(const glm::mat4& view, const SceneData& data,
 }
 
 void Scene::updateViewAspectRatio(const float& viewAspectRatio) {
-  proj = glm::mat4{
-      glm::perspective(glm::radians(45.0f), viewAspectRatio, 0.01f, 100.0f)};
+  static float currentAspectRatio;
+  if (currentAspectRatio != viewAspectRatio) [[unlikely]]
+    proj = glm::mat4{
+        glm::perspective(glm::radians(45.0f), viewAspectRatio, 0.01f, 100.0f)};
 }
 
 void Scene::addWalls() {
@@ -92,10 +94,13 @@ SceneController::SceneController() {
     data.spheres.push_back(generateRandomAnimatedSphereData());
 }
 
-void SceneController::updateSceneData(const bool& isBirdView) {
+void SceneController::updateSceneData(const bool& isBirdView,
+                                      double currentTimestamp) {
   data.isBirdView = isBirdView;
 
-  degreeCycleCounter = std::fmodf(degreeCycleCounter + 0.5f, 360.0f);
+  degreeCycleCounter =
+      std::fmodf(static_cast<float>(currentTimestamp) * 50.0f, 360.0f);
+  // degreeCycleCounter = std::fmodf(degreeCycleCounter + 0.5f, 360.0f);
 
   for (auto& sphere : data.spheres) {
     sphere.sphereData.position.x =
@@ -112,7 +117,7 @@ void SceneController::updateSceneData(const bool& isBirdView) {
 
 const SceneData& SceneController::sceneData() const { return data; }
 
-AnimatedSphereData generateRandomAnimatedSphereData() noexcept {
+static AnimatedSphereData generateRandomAnimatedSphereData() noexcept {
   std::random_device rd;
   std::mt19937 engine(rd());
 
@@ -145,11 +150,15 @@ AnimatedSphereData generateRandomAnimatedSphereData() noexcept {
       colorDistribution(engine),
   };
 
+  std::uniform_real_distribution<float> speedDistribution(10, 50);
+  float speed{speedDistribution(engine)};
+
   return {.originalPosition{position},
           .movingScale{movingScale},
           .cycleOffset{cycleOffset},
           .sphereData{
               .position{position},
               .color{color},
-          }};
+          },
+          .speed{speed}};
 }
