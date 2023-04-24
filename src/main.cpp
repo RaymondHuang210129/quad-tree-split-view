@@ -9,6 +9,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/matrix.hpp>
 
+#include "fps_counter.h"
 #include "quad_tree.h"
 #include "raii_glfw.h"
 #include "scene.h"
@@ -26,11 +27,12 @@ struct WindowUserData {
 int main() {
   const RaiiGlfw raiiGlfw{};
 
-  const int defaultWidth{720};
-  const int defaultHeight{720};
+  constexpr int defaultWidth{720};
+  constexpr int defaultHeight{720};
+  constexpr char windowTitle[] = "Quad Tree Split Views";
 
-  GLFWwindow* window = glfwCreateWindow(
-      defaultWidth, defaultHeight, "Quad Tree Split Views", nullptr, nullptr);
+  GLFWwindow* window = glfwCreateWindow(defaultWidth, defaultHeight,
+                                        windowTitle, nullptr, nullptr);
   if (window == NULL) {
     std::cout << "Failed to create GLFW window" << std::endl;
     return -1;
@@ -59,7 +61,12 @@ int main() {
 
   glfwSetKeyCallback(window, keyCallback);
 
+  FpsCounter fpsCounter{window, windowTitle};
+
   while (!glfwWindowShouldClose(window)) {
+
+    fpsCounter.updateFramerate();
+
     sceneController.updateSceneData(userData.isBirdView);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
