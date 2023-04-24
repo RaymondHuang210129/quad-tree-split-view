@@ -15,6 +15,9 @@
     <Filter Include="Source Files\Components">
       <UniqueIdentifier>{752d51ab-f7f9-4593-8591-0f7752a4d1d4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\utilities">
+      <UniqueIdentifier>{6add8a96-e72f-4192-9746-80e14f2a5f58}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -56,8 +59,11 @@
     <ClCompile Include="src\camera.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
+    <ClCompile Include="src\fps_counter.cpp">
+      <Filter>Source Files\utilities</Filter>
+    </ClCompile>
     <ClCompile Include="src\user_control.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\utilities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -95,9 +101,6 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\user_control.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\texture.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -133,6 +136,12 @@
     </ClInclude>
     <ClInclude Include="src\raii_glfw.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\fps_counter.h">
+      <Filter>Source Files\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\user_control.h">
+      <Filter>Source Files\utilities</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
