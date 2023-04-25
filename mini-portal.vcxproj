@@ -28,6 +28,7 @@
     <ClCompile Include="src\light_source.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\quad_tree.cpp" />
+    <ClCompile Include="src\template_test.cpp" />
     <ClCompile Include="src\texture.cpp" />
     <ClCompile Include="src\sphere.cpp" />
     <ClCompile Include="src\user_control.cpp" />
