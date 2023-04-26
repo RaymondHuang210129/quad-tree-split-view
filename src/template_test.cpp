@@ -63,7 +63,7 @@ class Scene {
   template <int I> struct Renderer {
     static void render(VectorsTuple& vectorsTuple) {
       auto& vector = std::get<I>(vectorsTuple);
-      for (auto element : vector) {
+      for (auto& element : vector) {
         if constexpr (has_render_void_method_v<
                           std::remove_reference_t<decltype(element)>>) {
           element.render();
