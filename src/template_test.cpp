@@ -70,16 +70,17 @@ class Scene {
   template <int I> struct Renderer {
     static void render(VectorsTuple& vectorsTuple) {
       auto& vector = std::get<I>(vectorsTuple);
-      for (auto& element : vector) {
+      for (auto& component : vector) {
         if constexpr (has_render_void_method_v<
-                          std::remove_reference_t<decltype(element)>>) {
-          element.render();
-        } else if constexpr (has_render_int_method_v<
-                                 std::remove_reference_t<decltype(element)>>) {
-          element.render(1);
+                          std::remove_reference_t<decltype(component)>>) {
+          component.render();
+        } else if constexpr (has_render_int_method_v<std::remove_reference_t<
+                                 decltype(component)>>) {
+          component.render(1);
         } else if constexpr (has_render_int_int_method_v<
-                                 std::remove_reference_t<decltype(element)>>) {
-          element.render(1, 1);
+                                 std::remove_reference_t<
+                                     decltype(component)>>) {
+          component.render(1, 1);
         } else {
           std::cout << "error" << std::endl;
         }
@@ -91,12 +92,18 @@ class Scene {
   };
 
 public:
-  Scene(std::vector<Types>... typeVector) : vectorsTuple(typeVector...){};
+  Scene(std::vector<Types>... componentVectors)
+      : vectorsTuple(componentVectors...){};
 
   template <typename T> std::vector<T>& getVector() {
     return MatchingField<0, T, VectorsTuple, VectorOfType<0, T>::value>::get(
         vectorsTuple);
   };
+
+  template <typename T> void addElement(T&& element) {
+    std::get<std::vector<T>>(vectorsTuple)
+        .emplace_back(std::forward<T>(element));
+  }
 
   void render() { Renderer<0>{}.render(vectorsTuple); };
 
@@ -131,6 +138,7 @@ int test() {
   scene.render();
 
   std::cout << has_render_void_method_v<Component1> << std::endl;
+  scene.addElement<Component2>(Component2{});
 
   return 0;
 }
