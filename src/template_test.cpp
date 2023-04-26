@@ -25,25 +25,32 @@ template <typename T>
 inline constexpr bool has_render_int_int_method_v =
     has_render_int_int_method<T>::value;
 
-template <typename... Args>
-concept Renderable = ((has_render_void_method_v<Args> ||
-                       has_render_int_method_v<Args> ||
-                       has_render_int_int_method_v<Args>)&&...);
+template <typename... Ts>
+concept Renderable = ((has_render_void_method_v<Ts> ||
+                       has_render_int_method_v<Ts> ||
+                       has_render_int_int_method_v<Ts>)&&...);
 
-template <typename... Type>
-requires Renderable<Type...> /* Removing this also works but generates uglier
-                                error message */
+template <typename...> inline constexpr bool is_unique = std::true_type{};
+
+template <typename T, typename... Rest>
+inline constexpr bool is_unique<T, Rest...> =
+    std::bool_constant<(!std::is_same_v<T, Rest> && ...) &&
+                       is_unique<Rest...>>{};
+
+template <typename... Ts>
+concept UniqueType = is_unique<Ts...>;
+
+template <typename... Types>
+requires Renderable<Types...> &&
+    UniqueType<Types...> /* Remove Renderable also works but generates uglier
+                            error message */
 class Scene {
 
-  using VectorsTuple = std::tuple<std::vector<Type>...>;
-
-  template <class T1, class T2> struct SameType {
-    static constexpr bool value = std::is_same_v<T1, T2>;
-  };
+  using VectorsTuple = std::tuple<std::vector<Types>...>;
 
   template <int N, typename T>
   struct VectorOfType
-      : SameType<
+      : std::is_same<
             T, typename std::tuple_element<N, VectorsTuple>::type::value_type> {
   };
 
@@ -84,7 +91,7 @@ class Scene {
   };
 
 public:
-  Scene(std::vector<Type>... typeVector) : vectorsTuple(typeVector...){};
+  Scene(std::vector<Types>... typeVector) : vectorsTuple(typeVector...){};
 
   template <typename T> std::vector<T>& getVector() {
     return MatchingField<0, T, VectorsTuple, VectorOfType<0, T>::value>::get(
