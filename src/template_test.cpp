@@ -117,9 +117,9 @@ public:
 int test() {
 
   Scene<Component1, Component2, Component3> scene{
-      {std::vector<Component1>{Component1{}, Component1{}}},
-      {std::vector<Component2>{Component2{}}},
-      {std::vector<Component3>{Component3{}, Component3{}, Component3{}}}};
+      std::vector<Component1>{Component1{}, Component1{}},
+      std::vector<Component2>{Component2{}},
+      std::vector<Component3>{Component3{}, Component3{}, Component3{}}};
 
   scene.render();
 
