@@ -1,5 +1,7 @@
 #include "camera.h"
 
+UserControlData CameraComponent::userData;
+
 const GLuint& CameraVaoProvider::vao() const {
   static auto _ = std::invoke([this] {
     glGenVertexArrays(1, &_vao);
@@ -85,6 +87,10 @@ const GLuint& CameraVaoProvider::vao() const {
   return _vao;
 }
 
+void CameraComponent::updateUserControlData(const UserControlData& userData) {
+  CameraComponent::userData = userData;
+}
+
 CameraComponent::CameraComponent(const glm::vec3& position) {
   model = glm::translate(model, position);
   model = glm::scale(model, glm::vec3{0.05f, 0.05f, 0.05f});
@@ -102,7 +108,7 @@ void CameraComponent::render(const glm::mat4& view, const glm::mat4& proj,
                              double horizontalAngleRadians,
                              double verticalAngleRadians,
                              const glm::vec3& viewPosition,
-                             const glm::vec3& lightPosition) {
+                             const glm::vec3& lightPosition) const {
   glBindVertexArray(vaoProvider.vao());
   glUseProgram(shaderProgramProvider.program());
   model = glm::rotate(model, static_cast<float>(horizontalAngleRadians),

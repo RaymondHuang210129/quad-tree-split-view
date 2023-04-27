@@ -11,11 +11,11 @@ const glm::mat4& FirstPersonController::view() const { return _view; };
 const glm::vec3& FirstPersonController::position() const { return _position; };
 
 const double FirstPersonController::horizontalAngleRadians() {
-  return _horizontalAngleRadians;
+  return userData.horizontalAngleRadians;
 };
 
 const double FirstPersonController::verticalAngleRadians() {
-  return _verticalAngleRadians;
+  return userData.verticalAngleRadians;
 };
 
 void FirstPersonController::updateView() {
@@ -29,24 +29,27 @@ void FirstPersonController::updateView() {
 
   float mouseSpeed{0.005f};
 
-  _horizontalAngleRadians = mouseSpeed * xDelta;
-  _verticalAngleRadians = mouseSpeed * yDelta;
+  userData.horizontalAngleRadians = mouseSpeed * xDelta;
+  userData.verticalAngleRadians = mouseSpeed * yDelta;
 
-  if (_verticalAngleRadians >= (80.0 * M_PI / 180.0))
-    _verticalAngleRadians = 80.0 * M_PI / 180.0;
-  if (_verticalAngleRadians <= (-70.0 * M_PI / 180.0))
-    _verticalAngleRadians = -70.0 * M_PI / 180.0;
+  if (userData.verticalAngleRadians >= (80.0 * M_PI / 180.0))
+    userData.verticalAngleRadians = 80.0 * M_PI / 180.0;
+  if (userData.verticalAngleRadians <= (-70.0 * M_PI / 180.0))
+    userData.verticalAngleRadians = -70.0 * M_PI / 180.0;
 
-  const glm::vec3 direction{
-      std::cos(_verticalAngleRadians) * std::sin(_horizontalAngleRadians),
-      std::sin(_verticalAngleRadians),
-      std::cos(_verticalAngleRadians) * std::cos(_horizontalAngleRadians)};
+  const glm::vec3 _direction{std::cos(userData.verticalAngleRadians) *
+                                 std::sin(userData.horizontalAngleRadians),
+                             std::sin(userData.verticalAngleRadians),
+                             std::cos(userData.verticalAngleRadians) *
+                                 std::cos(userData.horizontalAngleRadians)};
 
-  const glm::vec3 right{
-      glm::vec3{std::sin(_horizontalAngleRadians - 3.14f / 2.0f), 0.0f,
-                std::cos(_horizontalAngleRadians - 3.14f / 2.0f)}};
+  const glm::vec3 _right{
+      glm::vec3{std::sin(userData.horizontalAngleRadians - 3.14f / 2.0f), 0.0f,
+                std::cos(userData.horizontalAngleRadians - 3.14f / 2.0f)}};
 
-  const glm::vec3 up{glm::cross(right, direction)};
+  const glm::vec3 up{glm::cross(_right, _direction)};
 
-  _view = glm::lookAt(_position, _position + direction, up);
+  _view = glm::lookAt(_position, _position + _direction, up);
 };
+
+const UserControlData& FirstPersonController::getUserData() { return userData; }
