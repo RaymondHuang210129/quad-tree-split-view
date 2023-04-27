@@ -74,8 +74,8 @@ void SphereComponent::render(const glm::mat4& view, const glm::mat4& proj,
 };
 
 void SphereComponent::render(const glm::mat4& view, const glm::mat4& proj,
-                             glm::vec3& viewPosition, glm::vec3& lightPosition,
-                             UserControlData& userData) const {
+                             glm::vec3& viewPosition,
+                             glm::vec3& lightPosition) const {
   glBindVertexArray(vaoProvider.vao());
   glUseProgram(shaderProgramProvider.program());
 

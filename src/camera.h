@@ -28,8 +28,8 @@ public:
               const glm::vec3& viewPosition,
               const glm::vec3& lightPosition) const;
   void render(const glm::mat4& view, const glm::mat4& proj,
-              const glm::vec3& viewPosition, const glm::vec3& lightPosition,
-              UserControlData& userData) const;
+              const glm::vec3& viewPosition,
+              const glm::vec3& lightPosition) const;
   static void updateUserControlData(const UserControlData& userData);
 
 private:

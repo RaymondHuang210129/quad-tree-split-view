@@ -79,14 +79,18 @@ inline constexpr bool has_render_void_method_v =
     has_render_void_method<T>::value;
 
 template <typename T> struct has_render_int_method {
-  static constexpr bool value = requires(T t) { t.render(1); };
+  static constexpr bool value = requires(T t) {
+    t.render(std::declval<int>());
+  };
 };
 
 template <typename T>
 inline constexpr bool has_render_int_method_v = has_render_int_method<T>::value;
 
 template <typename T> struct has_render_int_int_method {
-  static constexpr bool value = requires(T t) { t.render(1, 1); };
+  static constexpr bool value = requires(T t) {
+    t.render(std::declval<int>(), std::declval<int>());
+  };
 };
 
 template <typename T>
@@ -95,7 +99,7 @@ inline constexpr bool has_render_int_int_method_v =
 
 template <typename T> struct has_render_mat4_mat4_method {
   static constexpr bool value = requires(T t) {
-    t.render(glm::mat4{}, glm::mat4{});
+    t.render(std::declval<glm::mat4>(), std::declval<glm::mat4>());
   };
 };
 
@@ -105,7 +109,8 @@ inline constexpr bool IsStaticStillComponent =
 
 template <typename T> struct has_render_mat4_mat4_vec3_vec3_method {
   static constexpr bool value = requires(T t) {
-    t.render(glm::mat4{}, glm::mat4{}, glm::vec3{}, glm::vec3{});
+    t.render(std::declval<glm::mat4>(), std::declval<glm::mat4>(),
+             std::declval<glm::vec3>(), std::declval<glm::vec3>());
   };
 };
 
@@ -157,7 +162,11 @@ class SceneV2 {
     static std::vector<T>& get(Tuple& tuple) { return std::get<N>(tuple); }
   };
 
-  template <typename TVec> static void _render(TVec& vector) {
+  template <typename TVec>
+  static void _render(TVec& vector, const glm::mat4& view,
+                      const glm::mat4& proj, const SceneData& data,
+                      const glm::vec3& viewPosition,
+                      const LightSourceComponent lightSource) {
     for (auto& component : vector) {
       if constexpr (has_render_void_method_v<
                         std::remove_reference_t<decltype(component)>>) {
@@ -170,12 +179,10 @@ class SceneV2 {
         component.render(1, 1);
       } else if constexpr (IsStaticStillComponent<
                                std::remove_reference_t<decltype(component)>>) {
-        // todo: call render
-        std::cout << "calling static component's render" << std::endl;
+        component.render(view, proj);
       } else if constexpr (IsLightingStillComponent<
                                std::remove_reference_t<decltype(component)>>) {
-        // todo: call render
-        std::cout << "calling lighting component's render" << std::endl;
+        component.render(view, proj, viewPosition, lightSource.position());
       } else {
         std::cout << "error" << std::endl;
       }
@@ -183,11 +190,16 @@ class SceneV2 {
   };
 
   template <int I> struct RenderHelper {
-    inline static void render(VectorsTuple& vectorsTuple) {
+    inline static void render(VectorsTuple& vectorsTuple, const glm::mat4& view,
+                              const glm::mat4& proj, const SceneData& data,
+                              const glm::vec3& viewPosition,
+                              const LightSourceComponent lightSource) {
       auto& vector = std::get<I>(vectorsTuple);
-      _render<std::tuple_element_t<I, VectorsTuple>>(vector);
+      _render<std::tuple_element_t<I, VectorsTuple>>(vector, view, proj, data,
+                                                     viewPosition, lightSource);
       if constexpr (I + 1 < std::tuple_size_v<VectorsTuple>) {
-        RenderHelper<I + 1>{}.render(vectorsTuple);
+        RenderHelper<I + 1>{}.render(vectorsTuple, view, proj, data,
+                                     viewPosition, lightSource);
       }
     }
   };
@@ -206,15 +218,26 @@ public:
         .emplace_back(std::forward<T>(element));
   };
 
-  template <typename T, typename... Rest> inline void render() {
+  // todo: revmove treeLeafs when main function is reimplemented
+  template <typename T, typename... Rest>
+  inline void render(const glm::mat4& view, const SceneData& data,
+                     const glm::vec3& viewPosition,
+                     std::vector<std::shared_ptr<QuadTreeNode>> treeLeafs) {
     auto& vector = std::get<std::vector<T>>(vectorsTuple);
-    _render<std::vector<T>>(vector);
+    _render<std::vector<T>>(vector, proj, view, data, viewPosition,
+                            lightSource);
     if constexpr (sizeof...(Rest) > 0) {
-      render<Rest...>();
+      render<Rest...>(view, data, viewPosition, treeLeafs);
     }
   };
 
-  inline void renderAll() { RenderHelper<0>{}.render(vectorsTuple); };
+  // todo: revmove treeLeafs when main function is reimplemented
+  inline void renderAll(const glm::mat4& view, const SceneData& data,
+                        const glm::vec3& viewPosition,
+                        std::vector<std::shared_ptr<QuadTreeNode>> treeLeafs) {
+    RenderHelper<0>{}.render(vectorsTuple, view, proj, data, viewPosition,
+                             lightSource);
+  };
 
   void updateViewAspectRatio(const float& viewAspectRatio) {
     static float currentAspectRatio;
@@ -225,5 +248,7 @@ public:
 
 private:
   VectorsTuple vectorsTuple{};
+  // todo (far away): make lightsource component dynamic
+  LightSourceComponent lightSource{glm::vec3{0.3f, 0.99f, 0.8f}};
   glm::mat4 proj{};
 };

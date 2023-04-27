@@ -44,8 +44,7 @@ public:
               const SphereData& data, const glm::vec3& viewPosition,
               const glm::vec3& lightPosition) const;
   void render(const glm::mat4& view, const glm::mat4& proj,
-              glm::vec3& viewPosition, glm::vec3& lightPosition,
-              UserControlData& userData) const;
+              glm::vec3& viewPosition, glm::vec3& lightPosition) const;
   void updatePosition(double& currentTimestamp);
 
 private:

@@ -16,6 +16,31 @@
 #include "scene.h"
 #include "user_control.h"
 
+class VoidComponent {
+public:
+  void render() { std::cout << "Component void render()" << std::endl; }
+};
+
+class IntComponent {
+public:
+  void render(int i) { std::cout << "Component int render()" << std::endl; }
+};
+
+class MatMatComponent {
+public:
+  void render(const glm::mat4& i, const glm::mat4& j) {
+    std::cout << "Component mat mat render()" << std::endl;
+  }
+};
+
+class MatMatVecVecComponent {
+public:
+  void render(const glm::mat4& i, const glm::mat4& j, const glm::vec3& k,
+              const glm::vec3& l) {
+    std::cout << "Component mat mat vec vec render()" << std::endl;
+  }
+};
+
 const float viewAspectRatio(const int& width, const int& height);
 void keyCallback(GLFWwindow* window, int key, int scancode, int action,
                  int mods) noexcept;
@@ -108,6 +133,24 @@ int main() {
     glfwSwapBuffers(window);
     glfwPollEvents();
   }
+
+  /* SceneV2 test */
+
+  SceneV2<VoidComponent, MatMatComponent, MatMatVecVecComponent, IntComponent>
+      scenev2{
+          std::vector<VoidComponent>{VoidComponent{}},
+          std::vector<MatMatComponent>{MatMatComponent{}, MatMatComponent{}},
+          std::vector<MatMatVecVecComponent>{MatMatVecVecComponent{},
+                                             MatMatVecVecComponent{},
+                                             MatMatVecVecComponent{}},
+          std::vector<IntComponent>{IntComponent{}}};
+
+  scenev2.addComponent(VoidComponent{});
+  auto& c2Vector = scenev2.getVector<VoidComponent>();
+  scenev2.renderAll(glm::mat4{}, SceneData{}, glm::vec3{}, {});
+  scenev2.render<MatMatVecVecComponent, VoidComponent>(glm::mat4{}, SceneData{},
+                                                       glm::vec3{}, {});
+  scenev2.updateViewAspectRatio(1.0f);
 
   return 0;
 }

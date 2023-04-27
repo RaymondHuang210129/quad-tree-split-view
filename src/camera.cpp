@@ -130,3 +130,29 @@ void CameraComponent::render(const glm::mat4& view, const glm::mat4& proj,
   for (GLint i = 0; i < numSurfaces; i++)
     glDrawArrays(GL_TRIANGLE_FAN, i * numPointsOfSurface, numPointsOfSurface);
 };
+
+void CameraComponent::render(const glm::mat4& view, const glm::mat4& proj,
+                             const glm::vec3& viewPosition,
+                             const glm::vec3& lightPosition) const {
+  glBindVertexArray(vaoProvider.vao());
+  glUseProgram(shaderProgramProvider.program());
+  model =
+      glm::rotate(model, static_cast<float>(userData.horizontalAngleRadians),
+                  glm::vec3{0.0f, 1.0f, 0.0f});
+  model = glm::rotate(model, static_cast<float>(userData.verticalAngleRadians),
+                      glm::vec3{-1.0f, 0.0f, 0.0f});
+  setUniformToProgram(shaderProgramProvider.program(), "color",
+                      glm::vec4{0.2, 0.2, 0.2, 1.0});
+  setUniformToProgram(shaderProgramProvider.program(), "model", model);
+  setUniformToProgram(shaderProgramProvider.program(), "view", view);
+  setUniformToProgram(shaderProgramProvider.program(), "proj", proj);
+  setUniformToProgram(shaderProgramProvider.program(), "viewPosition",
+                      viewPosition);
+  setUniformToProgram(shaderProgramProvider.program(), "lightPosition",
+                      lightPosition);
+
+  glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+  for (GLint i = 0; i < numSurfaces; i++)
+    glDrawArrays(GL_TRIANGLE_FAN, i * numPointsOfSurface, numPointsOfSurface);
+};
