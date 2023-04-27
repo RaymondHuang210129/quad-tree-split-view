@@ -37,6 +37,17 @@ SphereComponent::SphereComponent() {
                       GLfloat(1));
 };
 
+SphereComponent::SphereComponent(AnimatedSphereDataV2 data) : data(data) {
+  setUniformToProgram(shaderProgramProvider.program(), "lightAmbient",
+                      glm::vec3{0.2f});
+  setUniformToProgram(shaderProgramProvider.program(), "lightDiffuse",
+                      glm::vec3{1.0f});
+  setUniformToProgram(shaderProgramProvider.program(), "lightSpecular",
+                      glm::vec3{1.0f});
+  setUniformToProgram(shaderProgramProvider.program(), "luminousIntensity",
+                      GLfloat(1));
+};
+
 void SphereComponent::render(const glm::mat4& view, const glm::mat4& proj,
                              const SphereData& data,
                              const glm::vec3& viewPosition,
@@ -60,6 +71,43 @@ void SphereComponent::render(const glm::mat4& view, const glm::mat4& proj,
 
   glDrawArrays(GL_TRIANGLES, 0,
                static_cast<GLsizei>(vaoProvider.vertices.size()));
+};
+
+void SphereComponent::render(const glm::mat4& view, const glm::mat4& proj,
+                             glm::vec3& viewPosition, glm::vec3& lightPosition,
+                             UserControlData& userData) const {
+  glBindVertexArray(vaoProvider.vao());
+  glUseProgram(shaderProgramProvider.program());
+
+  glm::mat4 model{1.0f};
+  model = glm::translate(model, data.sphereData.position);
+  model = glm::scale(model, glm::vec3{0.05f});
+
+  setUniformToProgram(shaderProgramProvider.program(), "model", model);
+  setUniformToProgram(shaderProgramProvider.program(), "view", view);
+  setUniformToProgram(shaderProgramProvider.program(), "proj", proj);
+  setUniformToProgram(shaderProgramProvider.program(), "color",
+                      glm::vec4{data.sphereData.color, 1.0f});
+  setUniformToProgram(shaderProgramProvider.program(), "viewPosition",
+                      viewPosition);
+  setUniformToProgram(shaderProgramProvider.program(), "lightPosition",
+                      lightPosition);
+
+  glDrawArrays(GL_TRIANGLES, 0,
+               static_cast<GLsizei>(vaoProvider.vertices.size()));
+};
+
+void SphereComponent::updatePosition(double& currentTimestamp) {
+  float degreeCycleCounter =
+      std::fmodf(static_cast<float>(currentTimestamp) * 50.0f, 360.0f);
+  data.sphereData.position.x =
+      data.originalPosition.x +
+      glm::sin(glm::radians(degreeCycleCounter + data.cycleOffset)) *
+          data.movingScale.x;
+  data.sphereData.position.z =
+      data.originalPosition.z +
+      glm::cos(glm::radians(degreeCycleCounter + data.cycleOffset)) *
+          data.movingScale.z;
 };
 
 const std::vector<glm::vec3>
