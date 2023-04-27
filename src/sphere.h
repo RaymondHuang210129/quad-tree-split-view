@@ -10,6 +10,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "shader.h"
+#include "user_control.h"
 
 const std::vector<glm::vec3> tessellateIcosahedron(const size_t& divisionCount);
 
@@ -27,14 +28,28 @@ struct SphereData {
   glm::vec3 color;
 };
 
+struct AnimatedSphereDataV2 {
+  glm::vec3 originalPosition;
+  glm::vec3 movingScale;
+  float cycleOffset;
+  SphereData sphereData;
+  float speed;
+};
+
 class SphereComponent {
 public:
   SphereComponent();
+  SphereComponent(AnimatedSphereDataV2 data);
   void render(const glm::mat4& view, const glm::mat4& proj,
               const SphereData& data, const glm::vec3& viewPosition,
               const glm::vec3& lightPosition) const;
+  void render(const glm::mat4& view, const glm::mat4& proj,
+              glm::vec3& viewPosition, glm::vec3& lightPosition,
+              UserControlData& userData) const;
+  void updatePosition(double& currentTimestamp);
 
 private:
   static inline const LightingShaderProgramProvider shaderProgramProvider{};
   static inline const SphereVaoProvider vaoProvider{};
+  struct AnimatedSphereDataV2 data {};
 };

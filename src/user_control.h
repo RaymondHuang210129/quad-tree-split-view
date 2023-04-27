@@ -6,6 +6,11 @@
 #include <GLFW/glfw3.h>
 #include <glm/gtc/matrix_transform.hpp>
 
+struct UserControlData {
+  double horizontalAngleRadians;
+  double verticalAngleRadians;
+};
+
 class FirstPersonController {
 public:
   FirstPersonController(GLFWwindow* window, const glm::vec3& position);
@@ -14,11 +19,11 @@ public:
   const double horizontalAngleRadians();
   const double verticalAngleRadians();
   void updateView();
+  const UserControlData& getUserData();
 
 private:
   GLFWwindow* window{};
   glm::mat4 _view{};
   glm::vec3 _position{};
-  double _horizontalAngleRadians{};
-  double _verticalAngleRadians{};
+  UserControlData userData{};
 };
