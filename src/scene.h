@@ -133,6 +133,15 @@ template <typename T>
 inline constexpr bool HasUserControl =
     has_updateUserControlData_method<T>::value;
 
+template <typename T> struct has_updatePosition_method {
+  static constexpr bool value = requires(T t) {
+    t.updatePosition(std::declval<double>());
+  };
+};
+
+template <typename T>
+inline constexpr bool IsMovable = has_updatePosition_method<T>::value;
+
 template <typename...> inline constexpr bool is_unique = std::true_type{};
 
 template <typename T, typename... Rest>
@@ -196,6 +205,13 @@ class SceneV2 {
     }
   };
 
+  template <typename TVec>
+  static void _updatePosition(TVec& vector, const double& currentTimestamp) {
+    for (auto& component : vector) {
+      component.updatePosition(currentTimestamp);
+    }
+  };
+
   template <int I> struct RenderHelper {
     inline static void render(VectorsTuple& vectorsTuple, const glm::mat4& view,
                               const glm::mat4& proj, const SceneData& data,
@@ -224,11 +240,26 @@ class SceneV2 {
     }
   };
 
+  template <int I> struct UpdatePositionHelper {
+    inline static void updatePosition(VectorsTuple& vectorsTuple,
+                                      const double& currentTimestamp) {
+      if constexpr (IsMovable<typename std::tuple_element_t<
+                        I, VectorsTuple>::value_type>) {
+        auto& vector = std::get<I>(vectorsTuple);
+        _updatePosition<std::tuple_element_t<I, VectorsTuple>>(
+            vector, currentTimestamp);
+      }
+      // if constexpr (I + 1 < std::tuple_size_v<VectorsTuple>) {
+      //   UpdatePositionHelper<I + 1>::updatePosition(currentTimestamp);
+      // }
+    }
+  };
+
 public:
   SceneV2(std::vector<Components>... typeVector)
       : vectorsTuple(typeVector...){};
 
-  template <typename T> std::vector<T>& getVector() {
+  template <typename T> const std::vector<T>& getVector() {
     return MatchingField<0, T, VectorsTuple,
                          IsNthElementTypeT<0, T>::value>::get(vectorsTuple);
   };
@@ -261,6 +292,10 @@ public:
 
   inline void updateUserControlData(const UserControlData& userData) {
     UpdateUserDataHelper<0>::updateUserControlData(userData);
+  };
+
+  inline void updatePosition(const double& currentTimestamp) {
+    UpdatePositionHelper<0>::updatePosition(vectorsTuple, currentTimestamp);
   };
 
   void updateViewAspectRatio(const float& viewAspectRatio) {

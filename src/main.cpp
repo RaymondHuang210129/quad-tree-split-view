@@ -22,6 +22,9 @@ public:
   static void updateUserControlData(const UserControlData& userData) {
     std::cout << "Component void user updated" << std::endl;
   }
+  void updatePosition(const double& currentTimestamp) {
+    std::cout << "Component mat mat position updated" << std::endl;
+  }
 };
 
 class IntComponent {
@@ -38,6 +41,9 @@ class MatMatComponent {
 public:
   void render(const glm::mat4& i, const glm::mat4& j) const {
     std::cout << "Component mat mat render()" << std::endl;
+  }
+  void updatePosition(const double& currentTimestamp) {
+    std::cout << "Component mat mat position updated" << std::endl;
   }
 };
 
@@ -160,6 +166,7 @@ int main() {
                                                        glm::vec3{}, {});
   scenev2.updateViewAspectRatio(1.0f);
   scenev2.updateUserControlData(UserControlData{});
+  scenev2.updatePosition(1.0);
 
   return 0;
 }
