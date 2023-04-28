@@ -18,17 +18,25 @@
 
 class VoidComponent {
 public:
-  void render() { std::cout << "Component void render()" << std::endl; }
+  void render() const { std::cout << "Component void render()" << std::endl; }
+  static void updateUserControlData(const UserControlData& userData) {
+    std::cout << "Component void user updated" << std::endl;
+  }
 };
 
 class IntComponent {
 public:
-  void render(int i) { std::cout << "Component int render()" << std::endl; }
+  void render(const int& i) const {
+    std::cout << "Component int render()" << std::endl;
+  }
+  static void updateUserControlData(const UserControlData& userData) {
+    std::cout << "Component int user updated" << std::endl;
+  }
 };
 
 class MatMatComponent {
 public:
-  void render(const glm::mat4& i, const glm::mat4& j) {
+  void render(const glm::mat4& i, const glm::mat4& j) const {
     std::cout << "Component mat mat render()" << std::endl;
   }
 };
@@ -36,7 +44,7 @@ public:
 class MatMatVecVecComponent {
 public:
   void render(const glm::mat4& i, const glm::mat4& j, const glm::vec3& k,
-              const glm::vec3& l) {
+              const glm::vec3& l) const {
     std::cout << "Component mat mat vec vec render()" << std::endl;
   }
 };
@@ -151,6 +159,7 @@ int main() {
   scenev2.render<MatMatVecVecComponent, VoidComponent>(glm::mat4{}, SceneData{},
                                                        glm::vec3{}, {});
   scenev2.updateViewAspectRatio(1.0f);
+  scenev2.updateUserControlData(UserControlData{});
 
   return 0;
 }

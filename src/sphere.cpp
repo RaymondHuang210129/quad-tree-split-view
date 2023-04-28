@@ -74,8 +74,8 @@ void SphereComponent::render(const glm::mat4& view, const glm::mat4& proj,
 };
 
 void SphereComponent::render(const glm::mat4& view, const glm::mat4& proj,
-                             glm::vec3& viewPosition,
-                             glm::vec3& lightPosition) const {
+                             const glm::vec3& viewPosition,
+                             const glm::vec3& lightPosition) const {
   glBindVertexArray(vaoProvider.vao());
   glUseProgram(shaderProgramProvider.program());
 
@@ -97,7 +97,7 @@ void SphereComponent::render(const glm::mat4& view, const glm::mat4& proj,
                static_cast<GLsizei>(vaoProvider.vertices.size()));
 };
 
-void SphereComponent::updatePosition(double& currentTimestamp) {
+void SphereComponent::updatePosition(const double& currentTimestamp) {
   float degreeCycleCounter =
       std::fmodf(static_cast<float>(currentTimestamp) * 50.0f, 360.0f);
   data.sphereData.position.x =

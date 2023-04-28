@@ -104,8 +104,7 @@ template <typename T> struct has_render_mat4_mat4_method {
 };
 
 template <typename T>
-inline constexpr bool IsStaticStillComponent =
-    has_render_mat4_mat4_method<T>::value;
+inline constexpr bool HasPlainRender = has_render_mat4_mat4_method<T>::value;
 
 template <typename T> struct has_render_mat4_mat4_vec3_vec3_method {
   static constexpr bool value = requires(T t) {
@@ -115,15 +114,24 @@ template <typename T> struct has_render_mat4_mat4_vec3_vec3_method {
 };
 
 template <typename T>
-inline constexpr bool IsLightingStillComponent =
+inline constexpr bool HasPhongRender =
     has_render_mat4_mat4_vec3_vec3_method<T>::value;
 
 template <typename... Ts>
 concept Renderable = ((has_render_void_method_v<Ts> ||
                        has_render_int_method_v<Ts> ||
-                       has_render_int_int_method_v<Ts> ||
-                       IsStaticStillComponent<Ts> ||
-                       IsLightingStillComponent<Ts>)&&...);
+                       has_render_int_int_method_v<Ts> || HasPlainRender<Ts> ||
+                       HasPhongRender<Ts>)&&...);
+
+template <typename T> struct has_updateUserControlData_method {
+  static constexpr bool value = requires() {
+    T::updateUserControlData(std::declval<UserControlData>());
+  };
+};
+
+template <typename T>
+inline constexpr bool HasUserControl =
+    has_updateUserControlData_method<T>::value;
 
 template <typename...> inline constexpr bool is_unique = std::true_type{};
 
@@ -146,8 +154,7 @@ class SceneV2 {
   template <int N, typename T>
   struct IsNthElementTypeT
       : std::is_same<
-            T, typename std::tuple_element<N, VectorsTuple>::type::value_type> {
-  };
+            T, typename std::tuple_element_t<N, VectorsTuple>::value_type> {};
 
   template <int N, class T, class Tuple, bool Match = false>
   struct MatchingField {
@@ -163,25 +170,25 @@ class SceneV2 {
   };
 
   template <typename TVec>
-  static void _render(TVec& vector, const glm::mat4& view,
+  static void _render(const TVec& vector, const glm::mat4& view,
                       const glm::mat4& proj, const SceneData& data,
                       const glm::vec3& viewPosition,
-                      const LightSourceComponent lightSource) {
-    for (auto& component : vector) {
-      if constexpr (has_render_void_method_v<
-                        std::remove_reference_t<decltype(component)>>) {
+                      const LightSourceComponent& lightSource) {
+    for (const auto& component : vector) {
+      if constexpr (has_render_void_method_v<std::remove_cv_t<
+                        std::remove_reference_t<decltype(component)>>>) {
         component.render();
-      } else if constexpr (has_render_int_method_v<
-                               std::remove_reference_t<decltype(component)>>) {
+      } else if constexpr (has_render_int_method_v<std::remove_cv_t<
+                               std::remove_reference_t<decltype(component)>>>) {
         component.render(1);
-      } else if constexpr (has_render_int_int_method_v<
-                               std::remove_reference_t<decltype(component)>>) {
+      } else if constexpr (has_render_int_int_method_v<std::remove_cv_t<
+                               std::remove_reference_t<decltype(component)>>>) {
         component.render(1, 1);
-      } else if constexpr (IsStaticStillComponent<
-                               std::remove_reference_t<decltype(component)>>) {
+      } else if constexpr (HasPlainRender<std::remove_cv_t<
+                               std::remove_reference_t<decltype(component)>>>) {
         component.render(view, proj);
-      } else if constexpr (IsLightingStillComponent<
-                               std::remove_reference_t<decltype(component)>>) {
+      } else if constexpr (HasPhongRender<std::remove_cv_t<
+                               std::remove_reference_t<decltype(component)>>>) {
         component.render(view, proj, viewPosition, lightSource.position());
       } else {
         std::cout << "error" << std::endl;
@@ -193,13 +200,26 @@ class SceneV2 {
     inline static void render(VectorsTuple& vectorsTuple, const glm::mat4& view,
                               const glm::mat4& proj, const SceneData& data,
                               const glm::vec3& viewPosition,
-                              const LightSourceComponent lightSource) {
-      auto& vector = std::get<I>(vectorsTuple);
+                              const LightSourceComponent& lightSource) {
+      const auto& vector = std::get<I>(vectorsTuple);
       _render<std::tuple_element_t<I, VectorsTuple>>(vector, view, proj, data,
                                                      viewPosition, lightSource);
       if constexpr (I + 1 < std::tuple_size_v<VectorsTuple>) {
-        RenderHelper<I + 1>{}.render(vectorsTuple, view, proj, data,
-                                     viewPosition, lightSource);
+        RenderHelper<I + 1>::render(vectorsTuple, view, proj, data,
+                                    viewPosition, lightSource);
+      }
+    }
+  };
+
+  template <int I> struct UpdateUserDataHelper {
+    inline static void updateUserControlData(const UserControlData& userData) {
+      if constexpr (HasUserControl<typename std::tuple_element_t<
+                        I, VectorsTuple>::value_type>) {
+        typename std::tuple_element_t<
+            I, VectorsTuple>::value_type::updateUserControlData(userData);
+      }
+      if constexpr (I + 1 < std::tuple_size_v<VectorsTuple>) {
+        UpdateUserDataHelper<I + 1>::updateUserControlData(userData);
       }
     }
   };
@@ -223,7 +243,7 @@ public:
   inline void render(const glm::mat4& view, const SceneData& data,
                      const glm::vec3& viewPosition,
                      std::vector<std::shared_ptr<QuadTreeNode>> treeLeafs) {
-    auto& vector = std::get<std::vector<T>>(vectorsTuple);
+    const auto& vector = std::get<std::vector<T>>(vectorsTuple);
     _render<std::vector<T>>(vector, proj, view, data, viewPosition,
                             lightSource);
     if constexpr (sizeof...(Rest) > 0) {
@@ -235,8 +255,12 @@ public:
   inline void renderAll(const glm::mat4& view, const SceneData& data,
                         const glm::vec3& viewPosition,
                         std::vector<std::shared_ptr<QuadTreeNode>> treeLeafs) {
-    RenderHelper<0>{}.render(vectorsTuple, view, proj, data, viewPosition,
-                             lightSource);
+    RenderHelper<0>::render(vectorsTuple, view, proj, data, viewPosition,
+                            lightSource);
+  };
+
+  inline void updateUserControlData(const UserControlData& userData) {
+    UpdateUserDataHelper<0>::updateUserControlData(userData);
   };
 
   void updateViewAspectRatio(const float& viewAspectRatio) {
