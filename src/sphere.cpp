@@ -166,3 +166,49 @@ subdivideTriangle(const std::array<glm::vec3, 3>& triangle,
 
   return vertices;
 }
+
+AnimatedSphereDataV2 generateRandomAnimatedSphereDataV2() {
+  std::random_device rd;
+  std::mt19937 engine(rd());
+
+  std::uniform_real_distribution<> positionDistribution(-0.75, 0.75);
+  glm::vec3 position{
+      positionDistribution(engine),
+      0.05,
+      positionDistribution(engine),
+  };
+
+  std::uniform_real_distribution<> movingScaleXDistribution(
+      0.05, 0.9 - std::abs(position.x));
+  std::uniform_real_distribution<> movingScaleYDistribution(
+      0.05, 0.9 - std::abs(position.y));
+  std::uniform_real_distribution<> movingScaleZDistribution(
+      0.05, 0.9 - std::abs(position.z));
+  glm::vec3 movingScale{
+      movingScaleXDistribution(engine),
+      0,
+      movingScaleZDistribution(engine),
+  };
+
+  std::uniform_real_distribution<float> cycleOffsetDistribution(0, 360);
+  float cycleOffset{cycleOffsetDistribution(engine)};
+
+  std::uniform_real_distribution colorDistribution(0.4, 0.95);
+  glm::vec3 color{
+      colorDistribution(engine),
+      colorDistribution(engine),
+      colorDistribution(engine),
+  };
+
+  std::uniform_real_distribution<float> speedDistribution(10, 50);
+  float speed{speedDistribution(engine)};
+
+  return {.originalPosition{position},
+          .movingScale{movingScale},
+          .cycleOffset{cycleOffset},
+          .sphereData{
+              .position{position},
+              .color{color},
+          },
+          .speed{speed}};
+}

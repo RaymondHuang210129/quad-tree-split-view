@@ -10,13 +10,13 @@ const glm::mat4& FirstPersonController::view() const { return _view; };
 
 const glm::vec3& FirstPersonController::position() const { return _position; };
 
-const double FirstPersonController::horizontalAngleRadians() {
-  return userData.horizontalAngleRadians;
-};
-
-const double FirstPersonController::verticalAngleRadians() {
-  return userData.verticalAngleRadians;
-};
+// const double FirstPersonController::horizontalAngleRadians() {
+//   return userData.horizontalAngleRadians;
+// };
+//
+// const double FirstPersonController::verticalAngleRadians() {
+//   return userData.verticalAngleRadians;
+// };
 
 void FirstPersonController::updateView() {
   double xPos{}, yPos{};
@@ -52,4 +52,6 @@ void FirstPersonController::updateView() {
   _view = glm::lookAt(_position, _position + _direction, up);
 };
 
-const UserControlData& FirstPersonController::getUserData() { return userData; }
+const UserControlData& FirstPersonController::getUserControlData() {
+  return userData;
+}

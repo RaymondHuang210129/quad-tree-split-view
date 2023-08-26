@@ -14,8 +14,12 @@ getQuadTreeLeaves(std::vector<std::shared_ptr<QuadTreeNode>>& tree) {
   return leaves;
 };
 
-void shrinkQuadTree(std::vector<std::shared_ptr<QuadTreeNode>>& tree) {
-  if (tree.size() > 1) tree.pop_back();
+bool shrinkQuadTree(std::vector<std::shared_ptr<QuadTreeNode>>& tree) {
+  if (tree.size() > 1) {
+    tree.pop_back();
+    return true;
+  }
+  return false;
 }
 
 void growQuadTree(std::vector<std::shared_ptr<QuadTreeNode>>& tree,
@@ -31,6 +35,66 @@ void growQuadTree(std::vector<std::shared_ptr<QuadTreeNode>>& tree,
     controller = std::make_shared<FirstPersonController>(
         window, generateRandomPosition());
   else controller = parent->firstPersonController;
+
+  if (getDepth(newIdx) % 2 != 0) {
+    if (newIdx % 2 != 0) {
+      tree.push_back(std::make_shared<QuadTreeNode>(
+          parent->width / 2, parent->height, parent->x, parent->y, controller));
+    } else {
+      tree.push_back(std::make_shared<QuadTreeNode>(
+          parent->width / 2, parent->height, parent->x + parent->width / 2,
+          parent->y, controller));
+    }
+  } else {
+    if (newIdx % 2 != 0) {
+      tree.push_back(std::make_shared<QuadTreeNode>(
+          parent->width, parent->height / 2, parent->x, parent->y, controller));
+    } else {
+      tree.push_back(std::make_shared<QuadTreeNode>(
+          parent->width, parent->height / 2, parent->x,
+          parent->y + parent->height / 2, controller));
+    }
+  }
+}
+
+void growQuadTreeWithNewController(
+    std::vector<std::shared_ptr<QuadTreeNode>>& tree, GLFWwindow* window,
+    const glm::vec3 position) {
+  const auto newIdx = tree.size();
+  const auto& parent = tree[getParentIdx(newIdx)];
+
+  const std::shared_ptr<FirstPersonController> controller =
+      std::make_shared<FirstPersonController>(window, position);
+
+  // todo: extract this as a local function
+  if (getDepth(newIdx) % 2 != 0) {
+    if (newIdx % 2 != 0) {
+      tree.push_back(std::make_shared<QuadTreeNode>(
+          parent->width / 2, parent->height, parent->x, parent->y, controller));
+    } else {
+      tree.push_back(std::make_shared<QuadTreeNode>(
+          parent->width / 2, parent->height, parent->x + parent->width / 2,
+          parent->y, controller));
+    }
+  } else {
+    if (newIdx % 2 != 0) {
+      tree.push_back(std::make_shared<QuadTreeNode>(
+          parent->width, parent->height / 2, parent->x, parent->y, controller));
+    } else {
+      tree.push_back(std::make_shared<QuadTreeNode>(
+          parent->width, parent->height / 2, parent->x,
+          parent->y + parent->height / 2, controller));
+    }
+  }
+}
+
+void growQuadTreeWithInheritedController(
+    std::vector<std::shared_ptr<QuadTreeNode>>& tree, GLFWwindow* window) {
+  const auto newIdx = tree.size();
+  const auto& parent = tree[getParentIdx(newIdx)];
+
+  std::shared_ptr<FirstPersonController> controller =
+      parent->firstPersonController;
 
   if (getDepth(newIdx) % 2 != 0) {
     if (newIdx % 2 != 0) {

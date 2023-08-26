@@ -3,6 +3,7 @@
 
 #include <array>
 #include <cmath>
+#include <random>
 #include <vector>
 
 #include <glad/glad.h>
@@ -53,3 +54,5 @@ private:
   static inline const SphereVaoProvider vaoProvider{};
   struct AnimatedSphereDataV2 data {};
 };
+
+AnimatedSphereDataV2 generateRandomAnimatedSphereDataV2();

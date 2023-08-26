@@ -16,10 +16,10 @@ public:
   FirstPersonController(GLFWwindow* window, const glm::vec3& position);
   const glm::mat4& view() const;
   const glm::vec3& position() const;
-  const double horizontalAngleRadians();
-  const double verticalAngleRadians();
+  // const double horizontalAngleRadians();
+  // const double verticalAngleRadians();
   void updateView();
-  const UserControlData& getUserData();
+  const UserControlData& getUserControlData();
 
 private:
   GLFWwindow* window{};

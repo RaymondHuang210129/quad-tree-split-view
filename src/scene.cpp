@@ -9,38 +9,41 @@ Scene::Scene(const float& viewAspectRatio) {
   addCeiling();
 }
 
-void Scene::render(const glm::mat4& view, const SceneData& data,
-                   const glm::vec3& viewPosition,
-                   std::vector<std::shared_ptr<QuadTreeNode>> treeLeafs) const {
-  for (const auto& component : staticComponents)
-    std::visit([&](const auto& c) { c.render(view, proj); }, component);
-
-  for (const auto& component : lightingComponents)
-    std::visit(
-        [&](const auto& c) {
-          c.render(view, proj, viewPosition, lightSource.position());
-        },
-        component);
-
-  lightSource.render(view, proj);
-
-  renderSpheres(view, viewPosition, data.spheres);
-
-  if (!data.isBirdView)
-    for (const auto& cellingComponent : cellingComponents)
-      cellingComponent.render(view, proj, viewPosition, lightSource.position());
-
-  if (data.isBirdView) {
-    for (auto& treeLeaf : treeLeafs) {
-      CameraComponent cameraComponent(
-          treeLeaf->firstPersonController->position());
-      cameraComponent.render(
-          view, proj, treeLeaf->firstPersonController->horizontalAngleRadians(),
-          treeLeaf->firstPersonController->verticalAngleRadians(), viewPosition,
-          lightSource.position());
-    }
-  }
-}
+// void Scene::render(const glm::mat4& view, const SceneData& data,
+//                    const glm::vec3& viewPosition,
+//                    std::vector<std::shared_ptr<QuadTreeNode>> treeLeafs)
+//                    const {
+//   for (const auto& component : staticComponents)
+//     std::visit([&](const auto& c) { c.render(view, proj); }, component);
+//
+//   for (const auto& component : lightingComponents)
+//     std::visit(
+//         [&](const auto& c) {
+//           c.render(view, proj, viewPosition, lightSource.position());
+//         },
+//         component);
+//
+//   lightSource.render(view, proj);
+//
+//   renderSpheres(view, viewPosition, data.spheres);
+//
+//   if (!data.isBirdView)
+//     for (const auto& cellingComponent : cellingComponents)
+//       cellingComponent.render(view, proj, viewPosition,
+//       lightSource.position());
+//
+//   if (data.isBirdView) {
+//     for (auto& treeLeaf : treeLeafs) {
+//       CameraComponent cameraComponent(
+//           treeLeaf->firstPersonController->position());
+//       cameraComponent.render(
+//           view, proj,
+//           treeLeaf->firstPersonController->horizontalAngleRadians(),
+//           treeLeaf->firstPersonController->verticalAngleRadians(),
+//           viewPosition, lightSource.position());
+//     }
+//   }
+// }
 
 void Scene::updateViewAspectRatio(const float& viewAspectRatio) {
   static float currentAspectRatio;

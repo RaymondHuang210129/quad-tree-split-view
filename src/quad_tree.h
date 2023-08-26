@@ -23,9 +23,14 @@ public:
 
 std::vector<std::shared_ptr<QuadTreeNode>>
 getQuadTreeLeaves(std::vector<std::shared_ptr<QuadTreeNode>>& tree);
-void shrinkQuadTree(std::vector<std::shared_ptr<QuadTreeNode>>& tree);
+bool shrinkQuadTree(std::vector<std::shared_ptr<QuadTreeNode>>& tree);
 void growQuadTree(std::vector<std::shared_ptr<QuadTreeNode>>& tree,
                   GLFWwindow* window, bool inheritParentController);
+void growQuadTreeWithNewController(
+    std::vector<std::shared_ptr<QuadTreeNode>>& tree, GLFWwindow* window,
+    const glm::vec3 position);
+void growQuadTreeWithInheritedController(
+    std::vector<std::shared_ptr<QuadTreeNode>>& tree, GLFWwindow* window);
 static const size_t getParentIdx(const size_t& idx) noexcept;
 static const size_t getDepth(const size_t& idx) noexcept;
 static const glm::vec3 generateRandomPosition() noexcept;

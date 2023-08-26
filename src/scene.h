@@ -117,11 +117,25 @@ template <typename T>
 inline constexpr bool HasPhongRender =
     has_render_mat4_mat4_vec3_vec3_method<T>::value;
 
+template <typename T>
+struct has_render_mat4_mat4_double_double_vec3_vec3_method {
+  static constexpr bool value = requires(T t) {
+    t.render(std::declval<glm::mat4>(), std::declval<glm::mat4>(),
+             std::declval<double>(), std::declval<double>(),
+             std::declval<glm::vec3>(), std::declval<glm::vec3>());
+  };
+};
+
+template <typename T>
+inline constexpr bool HasPhongUserControlRender =
+    has_render_mat4_mat4_double_double_vec3_vec3_method::value;
+
 template <typename... Ts>
 concept Renderable = ((has_render_void_method_v<Ts> ||
                        has_render_int_method_v<Ts> ||
                        has_render_int_int_method_v<Ts> || HasPlainRender<Ts> ||
-                       HasPhongRender<Ts>)&&...);
+                       HasPhongRender<Ts> ||
+                       HasPhongUserControlRender<Ts>)&&...);
 
 template <typename T> struct has_updateUserControlData_method {
   static constexpr bool value = requires() {
@@ -199,6 +213,9 @@ class SceneV2 {
       } else if constexpr (HasPhongRender<std::remove_cv_t<
                                std::remove_reference_t<decltype(component)>>>) {
         component.render(view, proj, viewPosition, lightSource.position());
+      } else if constexpr (HasPhongUserControlRender<std::remove_cv_t<
+                               std::remove_reference_t<decltype(component)>>>) {
+        component.render(view, proj, viewPosition, lightSource.position());
       } else {
         std::cout << "error" << std::endl;
       }
@@ -249,17 +266,20 @@ class SceneV2 {
         _updatePosition<std::tuple_element_t<I, VectorsTuple>>(
             vector, currentTimestamp);
       }
-      // if constexpr (I + 1 < std::tuple_size_v<VectorsTuple>) {
-      //   UpdatePositionHelper<I + 1>::updatePosition(currentTimestamp);
-      // }
+      if constexpr (I + 1 < std::tuple_size_v<VectorsTuple>) {
+        UpdatePositionHelper<I + 1>::updatePosition(vectorsTuple,
+                                                    currentTimestamp);
+      }
     }
   };
 
 public:
-  SceneV2(std::vector<Components>... typeVector)
-      : vectorsTuple(typeVector...){};
+  SceneV2(const float& viewAspectRatio, std::vector<Components>... typeVector)
+      : vectorsTuple(typeVector...) {
+    updateViewAspectRatio(viewAspectRatio);
+  };
 
-  template <typename T> const std::vector<T>& getVector() {
+  template <typename T> std::vector<T>& getVector() {
     return MatchingField<0, T, VectorsTuple,
                          IsNthElementTypeT<0, T>::value>::get(vectorsTuple);
   };
@@ -275,7 +295,7 @@ public:
                      const glm::vec3& viewPosition,
                      std::vector<std::shared_ptr<QuadTreeNode>> treeLeafs) {
     const auto& vector = std::get<std::vector<T>>(vectorsTuple);
-    _render<std::vector<T>>(vector, proj, view, data, viewPosition,
+    _render<std::vector<T>>(vector, view, proj, data, viewPosition,
                             lightSource);
     if constexpr (sizeof...(Rest) > 0) {
       render<Rest...>(view, data, viewPosition, treeLeafs);
@@ -290,8 +310,8 @@ public:
                             lightSource);
   };
 
-  inline void updateUserControlData(const UserControlData& userData) {
-    UpdateUserDataHelper<0>::updateUserControlData(userData);
+  inline void updateUserControlData(const UserControlData& userControlData) {
+    UpdateUserDataHelper<0>::updateUserControlData(userControlData);
   };
 
   inline void updatePosition(const double& currentTimestamp) {
